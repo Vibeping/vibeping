@@ -3,7 +3,7 @@ import { NextRequest } from 'next/server';
 import { createMockQueryBuilder, createMockSupabase } from './setup';
 
 // Shared mock references
-let mockSupabase: ReturnType<typeof createMockSupabase>;
+let mockSupabase: any;
 let projectQueryBuilder: any;
 let eventsQueryBuilder: any;
 

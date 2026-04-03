@@ -3,7 +3,7 @@ import { NextRequest } from 'next/server';
 import { createMockQueryBuilder, createMockSupabase } from './setup';
 
 const mockUser = { id: 'user-123', email: 'test@example.com' };
-let mockGetUser: ReturnType<typeof vi.fn>;
+let mockGetUser: any;
 let mockSupabase: any;
 
 vi.mock('../lib/auth', () => ({
