@@ -1,11 +1,34 @@
-export default function SettingsPage() {
-  return (
-    <div>
-      <h1 className="text-2xl font-bold text-white font-outfit mb-2">Settings</h1>
-      <p className="text-slate-400">Project settings and configuration.</p>
-      <div className="mt-8 bg-white/5 border border-white/10 rounded-xl p-8 text-center">
-        <p className="text-slate-500">Settings page coming soon.</p>
-      </div>
-    </div>
+import { createAuthClient } from '../../lib/auth';
+import { redirect } from 'next/navigation';
+import SettingsClient from './SettingsClient';
+
+export default async function SettingsPage() {
+  const supabase = createAuthClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect('/login');
+  }
+
+  // Fetch all projects for this user
+  const { data: projects } = await supabase
+    .from('projects')
+    .select('id, name, url, api_key, created_at')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: true });
+
+  // Get event counts for each project
+  const projectsWithCounts = await Promise.all(
+    (projects || []).map(async (project) => {
+      const { count } = await supabase
+        .from('events')
+        .select('*', { count: 'exact', head: true })
+        .eq('project_id', project.id);
+      return { ...project, event_count: count || 0 };
+    })
   );
+
+  return <SettingsClient initialProjects={projectsWithCounts} />;
 }
