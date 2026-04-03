@@ -32,6 +32,11 @@ export function createAuthClient() {
   );
 }
 
+/**
+ * Get the current session. Prefer getUser() for auth checks — it validates
+ * the JWT server-side. Use getSession() only when you need the access token
+ * (e.g. passing it to createUserClient).
+ */
 export async function getSession() {
   const supabase = createAuthClient();
   const {

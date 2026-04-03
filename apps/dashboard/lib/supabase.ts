@@ -19,9 +19,13 @@ export function createServerClient() {
  * Browser-side Supabase client with anon key.
  * Uses the public anon key — safe to expose in client bundles.
  * RLS policies protect data access.
+ * PKCE flow ensures OAuth redirects use ?code= (server-exchangeable)
+ * instead of #access_token= (implicit, client-only).
  */
 export function createBrowserClient() {
-  return _createClient(supabaseUrl, supabaseAnonKey);
+  return _createClient(supabaseUrl, supabaseAnonKey, {
+    auth: { flowType: 'pkce' },
+  });
 }
 
 /**

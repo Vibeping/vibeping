@@ -28,11 +28,7 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  // Allow public routes
+  // Allow public routes (check before hitting Supabase to save latency)
   const { pathname } = request.nextUrl;
   if (
     pathname.startsWith('/login') ||
@@ -43,8 +39,14 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
+  // Use getUser() instead of getSession() — it validates the JWT against the
+  // Supabase auth server, preventing expired or forged tokens from passing through.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   // Redirect unauthenticated users to login
-  if (!session) {
+  if (!user) {
     const loginUrl = new URL('/login', request.url);
     return NextResponse.redirect(loginUrl);
   }
