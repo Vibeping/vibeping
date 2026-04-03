@@ -12,7 +12,7 @@
     "clean": "rm -rf .next"
   },
   "dependencies": {
-    "@supabase/ssr": "^0.4.0",
+    "@supabase/ssr": "^0.10.0",
     "@supabase/supabase-js": "^2.43.0",
     "@vibeping/sdk": "workspace:*",
     "class-variance-authority": "^0.7.0",
