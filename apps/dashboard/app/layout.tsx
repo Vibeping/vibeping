@@ -21,6 +21,14 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: 'VibePing — AI Growth Co-Pilot',
   description: 'Analytics, error tracking, uptime monitoring, and AI insights for vibe-coded apps.',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: '/apple-touch-icon.png',
+  },
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
