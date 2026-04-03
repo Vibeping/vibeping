@@ -2,10 +2,15 @@
 
 import { useState } from 'react';
 
-export default function EmptyState() {
+interface EmptyStateProps {
+  projectId?: string;
+}
+
+export default function EmptyState({ projectId }: EmptyStateProps) {
   const [copied, setCopied] = useState(false);
 
-  const snippet = `<script src="https://cdn.jsdelivr.net/npm/@vibeping/sdk@0.1.0/dist/vibeping.umd.js" data-id="YOUR_PROJECT_ID" defer></script>`;
+  const dataId = projectId || 'YOUR_PROJECT_ID';
+  const snippet = `<script src="https://cdn.jsdelivr.net/npm/@vibeping/sdk@0.1.0/dist/vibeping.umd.js" data-id="${dataId}" defer></script>`;
 
   function handleCopy() {
     navigator.clipboard.writeText(snippet);

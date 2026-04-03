@@ -1,6 +1,7 @@
 import { createAuthClient } from '../lib/auth';
 import StatCard from '../components/StatCard';
 import EmptyState from '../components/EmptyState';
+import OnboardingState from '../components/OnboardingState';
 
 async function getStats(projectId: string) {
   const supabase = createAuthClient();
@@ -133,15 +134,17 @@ export default async function OverviewPage() {
 
   const project = projects?.[0];
 
+  // No projects at all → show onboarding to create first project
   if (!project) {
-    return <EmptyState />;
+    return <OnboardingState />;
   }
 
   const stats = await getStats(project.id);
   const hasData = stats.totalViews > 0;
 
+  // Project exists but no data yet → show SDK install with real project ID
   if (!hasData) {
-    return <EmptyState />;
+    return <EmptyState projectId={project.id} />;
   }
 
   return (
