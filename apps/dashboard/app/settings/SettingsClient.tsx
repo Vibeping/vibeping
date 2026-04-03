@@ -1,15 +1,7 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-
-interface Project {
-  id: string;
-  name: string;
-  url: string | null;
-  api_key: string;
-  created_at: string;
-  event_count?: number;
-}
+import { useState, useEffect } from 'react';
+import { useProjects, Project } from '../../lib/ProjectContext';
 
 interface SettingsClientProps {
   initialProjects: Project[];
@@ -112,7 +104,15 @@ function ConfirmModal({
 }
 
 export default function SettingsClient({ initialProjects }: SettingsClientProps) {
-  const [projects, setProjects] = useState<Project[]>(initialProjects);
+  const {
+    projects,
+    selectedProject,
+    setSelectedProject,
+    addProject,
+    updateProject: updateProjectInContext,
+    removeProject,
+  } = useProjects();
+
   const [activeProjectId, setActiveProjectId] = useState<string | null>(
     initialProjects.length > 0 ? initialProjects[0].id : null
   );
@@ -134,15 +134,14 @@ export default function SettingsClient({ initialProjects }: SettingsClientProps)
     onConfirm: () => void;
   }>({ open: false, title: '', message: '', confirmLabel: '', onConfirm: () => {} });
 
-  const activeProject = projects.find((p) => p.id === activeProjectId) || null;
-
-  const _refreshProjects = useCallback(async () => {
-    const res = await fetch('/api/projects');
-    if (res.ok) {
-      const data = await res.json();
-      setProjects(data.projects);
+  // Sync activeProjectId with context's selectedProject
+  useEffect(() => {
+    if (selectedProject && activeProjectId !== selectedProject.id) {
+      setActiveProjectId(selectedProject.id);
     }
-  }, []);
+  }, [selectedProject]);
+
+  const activeProject = projects.find((p) => p.id === activeProjectId) || null;
 
   const handleUpdateProject = async (updates: Record<string, unknown>) => {
     if (!activeProject) return;
@@ -155,9 +154,7 @@ export default function SettingsClient({ initialProjects }: SettingsClientProps)
       });
       if (res.ok) {
         const data = await res.json();
-        setProjects((prev) =>
-          prev.map((p) => (p.id === data.project.id ? { ...p, ...data.project } : p))
-        );
+        updateProjectInContext(data.project);
       }
     } finally {
       setSaving(false);
@@ -194,8 +191,8 @@ export default function SettingsClient({ initialProjects }: SettingsClientProps)
         setConfirmModal((prev) => ({ ...prev, open: false }));
         const res = await fetch(`/api/projects?id=${activeProject.id}`, { method: 'DELETE' });
         if (res.ok) {
+          removeProject(activeProject.id);
           const remaining = projects.filter((p) => p.id !== activeProject.id);
-          setProjects(remaining);
           setActiveProjectId(remaining.length > 0 ? remaining[0].id : null);
         }
       },
@@ -214,8 +211,10 @@ export default function SettingsClient({ initialProjects }: SettingsClientProps)
       });
       if (res.ok) {
         const data = await res.json();
-        setProjects((prev) => [...prev, { ...data.project, event_count: 0 }]);
-        setActiveProjectId(data.project.id);
+        const newProject = { ...data.project, event_count: 0 };
+        addProject(newProject);
+        setActiveProjectId(newProject.id);
+        setSelectedProject(newProject);
         setNewProjectName('');
         setNewProjectUrl('');
       }

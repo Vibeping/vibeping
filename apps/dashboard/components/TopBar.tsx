@@ -3,16 +3,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { createBrowserClient } from '../lib/supabase';
 import { useRouter } from 'next/navigation';
-
-interface Project {
-  id: string;
-  name: string;
-  domain: string;
-}
+import { useProjects } from '../lib/ProjectContext';
 
 export default function TopBar() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const { projects, selectedProject, setSelectedProject } = useProjects();
   const [projectDropdownOpen, setProjectDropdownOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [userEmail, setUserEmail] = useState('');
@@ -22,25 +16,15 @@ export default function TopBar() {
   const userRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    async function load() {
+    async function loadUser() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
       if (user) {
         setUserEmail(user.email || '');
       }
-
-      const { data } = await supabase
-        .from('projects')
-        .select('id, name, domain')
-        .order('created_at', { ascending: false });
-
-      if (data && data.length > 0) {
-        setProjects(data);
-        setSelectedProject(data[0]);
-      }
     }
-    load();
+    loadUser();
   }, []);
 
   // Close dropdowns on outside click
@@ -102,7 +86,7 @@ export default function TopBar() {
                   }`}
                 >
                   <div className="font-medium">{project.name}</div>
-                  <div className="text-xs text-slate-500">{project.domain}</div>
+                  <div className="text-xs text-slate-500">{project.url || project.domain}</div>
                 </button>
               ))}
               <div className="border-t border-white/5 mt-1 pt-1">
