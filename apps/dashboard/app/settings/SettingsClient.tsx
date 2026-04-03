@@ -228,7 +228,7 @@ export default function SettingsClient({ initialProjects }: SettingsClientProps)
   const maskedKey = activeProject ? activeProject.api_key.slice(0, 6) + '••••••••••••••••••••' : '';
 
   const scriptTag = activeProject
-    ? `<script src="https://cdn.jsdelivr.net/npm/@vibeping/sdk@0.1.0/dist/vibeping.umd.js" data-id="${activeProject.api_key}"></script>`
+    ? `<script src="https://cdn.jsdelivr.net/npm/@vibeping/sdk@latest/dist/vibeping.umd.js" data-id="${activeProject.api_key}"></script>`
     : '';
 
   const npmSnippet = activeProject
@@ -236,7 +236,7 @@ export default function SettingsClient({ initialProjects }: SettingsClientProps)
     : '';
 
   const justCreatedScriptTag = justCreated
-    ? `<script src="https://cdn.jsdelivr.net/npm/@vibeping/sdk@0.1.0/dist/vibeping.umd.js" data-id="${justCreated.api_key}"></script>`
+    ? `<script src="https://cdn.jsdelivr.net/npm/@vibeping/sdk@latest/dist/vibeping.umd.js" data-id="${justCreated.api_key}"></script>`
     : '';
 
   const justCreatedNpmSnippet = justCreated
@@ -244,7 +244,7 @@ export default function SettingsClient({ initialProjects }: SettingsClientProps)
     : '';
 
   const lovablePrompt = justCreated
-    ? `Add this script tag to the <head> of my HTML to enable VibePing analytics:\n\n<script src="https://cdn.jsdelivr.net/npm/@vibeping/sdk@0.1.0/dist/vibeping.umd.js" data-id="${justCreated.api_key}"></script>`
+    ? `Add this script tag to the <head> of my HTML to enable VibePing analytics:\n\n<script src="https://cdn.jsdelivr.net/npm/@vibeping/sdk@latest/dist/vibeping.umd.js" data-id="${justCreated.api_key}"></script>`
     : '';
 
   if (justCreated) {

@@ -154,7 +154,7 @@ Pin a specific version to avoid unexpected changes:
 
 ```html
 <script
-  src="https://cdn.jsdelivr.net/npm/@vibeping/sdk@0.1.0/dist/vibeping.umd.js"
+  src="https://cdn.jsdelivr.net/npm/@vibeping/sdk@latest/dist/vibeping.umd.js"
   data-id="vp_your_api_key"
 ></script>
 ```
