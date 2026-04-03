@@ -30,15 +30,18 @@ Built for vibe coders using **Lovable**, **Bolt.new**, **Cursor**, and **Replit*
 
 ## Quick Start
 
-### Option 1: Script Tag (easiest)
+### Hosted Version (easiest)
+
+Use the hosted version at **[app.vibeping.dev](https://app.vibeping.dev)** — no setup required.
+Sign up, create a project, and add the script tag:
 
 ```html
-<script src="https://cdn.vibeping.dev/v1.js" data-id="vp_your_api_key"></script>
+<script src="https://app.vibeping.dev/sdk/v1.js" data-id="vp_your_api_key"></script>
 ```
 
 That's it. Analytics, errors, and vitals are now tracked.
 
-### Option 2: NPM Package
+### NPM Package
 
 ```bash
 npm install @vibeping/sdk
@@ -48,6 +51,8 @@ npm install @vibeping/sdk
 import { vibeping } from '@vibeping/sdk';
 
 vibeping.init({ id: 'vp_your_project_id' });
+// By default, events are sent to https://app.vibeping.dev
+// For self-hosted, pass apiUrl: vibeping.init({ id: '...', apiUrl: 'https://your-instance.com' })
 
 // Optional: track custom events
 vibeping.track('signup_completed', { plan: 'free' });
@@ -101,6 +106,8 @@ vibeping.identify('user_123', { email: 'dev@example.com', plan: 'pro' });
 
 ## Self-Hosting
 
+> **Prefer not to self-host?** Use the hosted version at [app.vibeping.dev](https://app.vibeping.dev) — free tier available.
+
 Run VibePing on your own infrastructure. VibePing requires **Supabase** for authentication and database (the schema uses Supabase Auth features like `auth.users` and Row Level Security).
 
 ### Prerequisites
@@ -131,6 +138,32 @@ docker compose up -d
 ```
 
 Open `http://localhost:3000` and start tracking.
+
+## CDN Options
+
+You can load the VibePing SDK via a `<script>` tag from several CDN sources:
+
+| Option                     | URL                                                               | Notes                                       |
+| -------------------------- | ----------------------------------------------------------------- | ------------------------------------------- |
+| **jsDelivr** (recommended) | `https://cdn.jsdelivr.net/npm/@vibeping/sdk/dist/vibeping.umd.js` | Free, fast, no setup needed                 |
+| **unpkg**                  | `https://unpkg.com/@vibeping/sdk/dist/vibeping.umd.js`            | Free alternative CDN                        |
+| **Self-host**              | Download from npm and serve from your own origin                  | Full control over caching & availability    |
+| **cdn.vibeping.dev**       | `https://cdn.vibeping.dev/v1.js`                                  | 🚧 Coming soon — custom CDN with SRI hashes |
+
+Pin a specific version to avoid unexpected changes:
+
+```html
+<script
+  src="https://cdn.jsdelivr.net/npm/@vibeping/sdk@0.1.0/dist/vibeping.umd.js"
+  data-id="vp_your_api_key"
+></script>
+```
+
+To build CDN-ready files locally, run:
+
+```bash
+./scripts/publish-cdn.sh
+```
 
 ## Tech Stack
 

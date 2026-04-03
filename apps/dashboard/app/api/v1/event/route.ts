@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '../../../../lib/supabase';
 
 // ---- CORS helpers ----
+// NOTE: CORS is intentionally set to '*' because the SDK runs on customer domains.
+// This is correct behavior for a public analytics ingestion endpoint.
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',

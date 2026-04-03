@@ -1,4 +1,7 @@
 {
+  "framework": "nextjs",
+  "buildCommand": "cd ../.. && pnpm turbo run build --filter=dashboard",
+  "installCommand": "cd ../.. && pnpm install",
   "crons": [
     {
       "path": "/api/uptime/ping?secret=${UPTIME_CRON_SECRET}",

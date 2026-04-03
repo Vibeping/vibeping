@@ -5,7 +5,7 @@ import { useState } from 'react';
 export default function EmptyState() {
   const [copied, setCopied] = useState(false);
 
-  const snippet = `<script src="https://cdn.vibeping.dev/v1.js" data-id="YOUR_PROJECT_ID" defer></script>`;
+  const snippet = `<script src="https://cdn.jsdelivr.net/npm/@vibeping/sdk@0.1.0/dist/vibeping.umd.js" data-id="YOUR_PROJECT_ID" defer></script>`;
 
   function handleCopy() {
     navigator.clipboard.writeText(snippet);

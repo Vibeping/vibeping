@@ -227,7 +227,7 @@ export default function SettingsClient({ initialProjects }: SettingsClientProps)
   const maskedKey = activeProject ? activeProject.api_key.slice(0, 6) + '••••••••••••••••••••' : '';
 
   const scriptTag = activeProject
-    ? `<script src="https://cdn.vibeping.dev/v1.js" data-id="${activeProject.api_key}"></script>`
+    ? `<script src="https://cdn.jsdelivr.net/npm/@vibeping/sdk@0.1.0/dist/vibeping.umd.js" data-id="${activeProject.api_key}"></script>`
     : '';
 
   const npmSnippet = activeProject

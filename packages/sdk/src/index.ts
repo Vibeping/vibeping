@@ -24,7 +24,7 @@ export type {
 } from './types';
 
 /** Default API URL */
-const DEFAULT_API_URL = '';
+const DEFAULT_API_URL = 'https://app.vibeping.dev';
 
 /** Public API returned by init() */
 export interface VibePingAPI {
@@ -68,9 +68,9 @@ export function init(config: VibePingConfig): VibePingAPI {
     throw new Error('[VibePing] config.id is required');
   }
 
-  if (!config.apiUrl) {
+  if ('apiUrl' in config && !config.apiUrl) {
     console.warn(
-      '[VibePing] No apiUrl configured. Events will not be sent. Set apiUrl in vibeping.init({ apiUrl: ... })'
+      '[VibePing] apiUrl was explicitly set to empty. Events will not be sent. Set apiUrl in vibeping.init({ apiUrl: ... }) or omit it to use the default (https://app.vibeping.dev).'
     );
   }
 

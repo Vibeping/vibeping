@@ -7,7 +7,7 @@
 export interface VibePingConfig {
   /** API key from VibePing dashboard (e.g. 'vp_abc123') */
   id: string;
-  /** API endpoint URL (required for self-hosted deployments) */
+  /** API endpoint URL (defaults to https://app.vibeping.dev) */
   apiUrl?: string;
   /** Enable debug logging to console */
   debug?: boolean;
