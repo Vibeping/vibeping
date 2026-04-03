@@ -5,7 +5,7 @@
 
 /** SDK configuration passed to vibeping.init() */
 export interface VibePingConfig {
-  /** Project ID from VibePing dashboard */
+  /** API key from VibePing dashboard (e.g. 'vp_abc123') */
   id: string;
   /** API endpoint URL (required for self-hosted deployments) */
   apiUrl?: string;
@@ -110,8 +110,8 @@ export type VibePingEvent =
 
 /** Batch payload sent to the API */
 export interface TransportPayload {
-  /** Project ID */
-  projectId: string;
+  /** API key for authentication */
+  apiKey: string;
   /** Batch of events */
   events: VibePingEvent[];
   /** SDK version */

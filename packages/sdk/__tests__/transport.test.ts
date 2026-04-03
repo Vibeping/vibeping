@@ -58,7 +58,7 @@ describe('Transport', () => {
     expect(call[1].method).toBe('POST');
 
     const body = JSON.parse(call[1].body);
-    expect(body.projectId).toBe('proj_test');
+    expect(body.apiKey).toBe('proj_test');
     expect(body.events).toHaveLength(1);
     expect(body.sdkVersion).toBe('0.1.0');
     expect(body.sentAt).toBeDefined();

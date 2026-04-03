@@ -87,7 +87,7 @@ async function getStats(projectId: string) {
     .from('events')
     .select('type, payload')
     .eq('project_id', projectId)
-    .in('type', ['web-vital', 'web_vital'])
+    .in('type', ['vital'])
     .order('created_at', { ascending: false })
     .limit(50);
 

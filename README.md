@@ -33,7 +33,7 @@ Built for vibe coders using **Lovable**, **Bolt.new**, **Cursor**, and **Replit*
 ### Option 1: Script Tag (easiest)
 
 ```html
-<script src="https://cdn.vibeping.dev/v1.js" data-id="vp_your_project_id"></script>
+<script src="https://cdn.vibeping.dev/v1.js" data-id="vp_your_api_key"></script>
 ```
 
 That's it. Analytics, errors, and vitals are now tracked.

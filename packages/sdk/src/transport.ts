@@ -22,7 +22,7 @@ export function createTransport(config: ResolvedConfig): Transport {
   /** Build the payload from the current buffer */
   function buildPayload(events: VibePingEvent[]): TransportPayload {
     return {
-      projectId: config.id,
+      apiKey: config.id,
       events,
       sdkVersion: SDK_VERSION,
       sentAt: new Date().toISOString(),
