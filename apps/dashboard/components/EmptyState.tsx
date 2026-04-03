@@ -7,15 +7,23 @@ interface EmptyStateProps {
 }
 
 export default function EmptyState({ projectId }: EmptyStateProps) {
-  const [copied, setCopied] = useState(false);
+  const [copiedSnippet, setCopiedSnippet] = useState(false);
+  const [copiedPrompt, setCopiedPrompt] = useState(false);
 
   const dataId = projectId || 'YOUR_PROJECT_ID';
   const snippet = `<script src="https://cdn.jsdelivr.net/npm/@vibeping/sdk@0.1.0/dist/vibeping.umd.js" data-id="${dataId}" defer></script>`;
+  const prompt = `Add this script tag to the <head> of my HTML to enable VibePing analytics:\n\n${snippet}`;
 
-  function handleCopy() {
+  function handleCopySnippet() {
     navigator.clipboard.writeText(snippet);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setCopiedSnippet(true);
+    setTimeout(() => setCopiedSnippet(false), 2000);
+  }
+
+  function handleCopyPrompt() {
+    navigator.clipboard.writeText(prompt);
+    setCopiedPrompt(true);
+    setTimeout(() => setCopiedPrompt(false), 2000);
   }
 
   return (
@@ -26,18 +34,40 @@ export default function EmptyState({ projectId }: EmptyStateProps) {
         Install the VibePing SDK to start tracking pageviews, errors, uptime, and web vitals.
       </p>
 
-      <div className="w-full max-w-xl">
-        <p className="text-xs text-slate-500 mb-2 uppercase tracking-wide font-medium">
-          Add this to your HTML
-        </p>
-        <div className="relative bg-[#070B16] border border-white/10 rounded-lg p-4 font-mono text-sm text-cyan-400 overflow-x-auto">
-          <code>{snippet}</code>
-          <button
-            onClick={handleCopy}
-            className="absolute top-2 right-2 px-3 py-1 text-xs bg-white/10 hover:bg-white/20 text-white rounded-md transition"
-          >
-            {copied ? '✓ Copied' : 'Copy'}
-          </button>
+      <div className="w-full max-w-xl space-y-5">
+        {/* Prompt for AI tools */}
+        <div>
+          <p className="text-xs text-slate-500 mb-2 uppercase tracking-wide font-medium flex items-center gap-1.5">
+            <span className="text-sm">✨</span> Prompt for Lovable / Bolt / v0
+          </p>
+          <div className="relative bg-[#070B16] border border-white/10 rounded-lg p-4 font-mono text-sm text-cyan-400 whitespace-pre-wrap break-words">
+            <code>{prompt}</code>
+            <button
+              onClick={handleCopyPrompt}
+              className="absolute top-2 right-2 px-3 py-1 text-xs bg-white/10 hover:bg-white/20 text-white rounded-md transition"
+            >
+              {copiedPrompt ? '✓ Copied' : 'Copy prompt'}
+            </button>
+          </div>
+          <p className="text-xs text-slate-500 mt-1.5">
+            Paste this into your AI coding tool and it will set everything up.
+          </p>
+        </div>
+
+        {/* Script tag */}
+        <div>
+          <p className="text-xs text-slate-500 mb-2 uppercase tracking-wide font-medium">
+            Or add this to your HTML
+          </p>
+          <div className="relative bg-[#070B16] border border-white/10 rounded-lg p-4 font-mono text-sm text-cyan-400 whitespace-pre-wrap break-all">
+            <code>{snippet}</code>
+            <button
+              onClick={handleCopySnippet}
+              className="absolute top-2 right-2 px-3 py-1 text-xs bg-white/10 hover:bg-white/20 text-white rounded-md transition"
+            >
+              {copiedSnippet ? '✓ Copied' : 'Copy'}
+            </button>
+          </div>
         </div>
       </div>
 
