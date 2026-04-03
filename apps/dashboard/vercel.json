@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/uptime/ping?secret=${UPTIME_CRON_SECRET}",
+      "schedule": "* * * * *"
+    }
+  ]
+}

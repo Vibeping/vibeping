@@ -106,7 +106,13 @@ export default function TopBar() {
                 </button>
               ))}
               <div className="border-t border-white/5 mt-1 pt-1">
-                <button className="w-full text-left px-4 py-2.5 text-sm text-cyan-400 hover:bg-white/5 transition flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    setProjectDropdownOpen(false);
+                    router.push('/settings');
+                  }}
+                  className="w-full text-left px-4 py-2.5 text-sm text-cyan-400 hover:bg-white/5 transition flex items-center gap-2"
+                >
                   <svg
                     className="w-4 h-4"
                     fill="none"

@@ -1,61 +1,37 @@
+# VibePing Self-Hosting Docker Compose
+#
+# PREREQUISITES:
+#   VibePing requires Supabase for authentication and database.
+#   You need a Supabase project (cloud or self-hosted) before running this.
+#
+#   1. Create a Supabase project at https://supabase.com (free tier works)
+#      OR self-host Supabase: https://supabase.com/docs/guides/self-hosting
+#   2. Run the migrations in supabase/migrations/ against your Supabase DB
+#   3. Copy .env.example to .env and fill in your Supabase credentials:
+#        NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+#        NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+#        SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+#   4. Run: docker compose up -d
+#
+# The dashboard will be available at http://localhost:3000
+
 services:
-  db:
-    image: supabase/postgres:15.1.1.41
-    ports:
-      - '5432:5432'
-    environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-vibeping}
-      POSTGRES_DB: vibeping
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres -d vibeping']
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-
-  db-migrate:
-    image: supabase/postgres:15.1.1.41
-    depends_on:
-      db:
-        condition: service_healthy
-    volumes:
-      - ./supabase/migrations:/migrations:ro
-    entrypoint: ['/bin/sh', '-c']
-    command:
-      - |
-        for f in /migrations/*.sql; do
-          echo "Applying migration: $$f"
-          PGPASSWORD=$${POSTGRES_PASSWORD:-vibeping} psql -h db -U postgres -d vibeping -f "$$f"
-        done
-        echo "Migrations complete."
-    environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-vibeping}
-
   dashboard:
     build:
       context: .
       dockerfile: apps/dashboard/Dockerfile
     ports:
       - '3000:3000'
+    env_file:
+      - .env
     environment:
-      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-vibeping}@db:5432/vibeping
       NEXT_PUBLIC_VIBEPING_API_URL: http://localhost:3000/api
-      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-http://localhost:54321}
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}
-      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
-    depends_on:
-      db:
-        condition: service_healthy
-      db-migrate:
-        condition: service_completed_successfully
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:?Set NEXT_PUBLIC_SUPABASE_URL in .env}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY:?Set NEXT_PUBLIC_SUPABASE_ANON_KEY in .env}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:?Set SUPABASE_SERVICE_ROLE_KEY in .env}
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:3000/']
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 15s
-
-volumes:
-  pgdata:

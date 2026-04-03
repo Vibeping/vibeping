@@ -37,7 +37,8 @@ export async function middleware(request: NextRequest) {
   if (
     pathname.startsWith('/login') ||
     pathname.startsWith('/auth/callback') ||
-    pathname.startsWith('/api/v1/')
+    pathname.startsWith('/api/v1/') ||
+    pathname.startsWith('/api/uptime/ping')
   ) {
     return response;
   }

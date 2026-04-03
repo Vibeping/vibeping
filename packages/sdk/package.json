@@ -67,5 +67,7 @@
       "optional": true
     }
   },
-  "sideEffects": false
+  "sideEffects": [
+    "dist/vibeping.umd.js"
+  ]
 }

@@ -101,12 +101,32 @@ vibeping.identify('user_123', { email: 'dev@example.com', plan: 'pro' });
 
 ## Self-Hosting
 
-Run VibePing on your own infrastructure:
+Run VibePing on your own infrastructure. VibePing requires **Supabase** for authentication and database (the schema uses Supabase Auth features like `auth.users` and Row Level Security).
+
+### Prerequisites
+
+1. **Create a Supabase project** — use [Supabase Cloud](https://supabase.com) (free tier works) or [self-host Supabase](https://supabase.com/docs/guides/self-hosting)
+2. **Run database migrations** — apply the SQL files in `supabase/migrations/` to your Supabase project (via the Supabase dashboard SQL editor or CLI)
+
+### Deploy with Docker
 
 ```bash
 git clone https://github.com/Vibeping/vibeping.git
 cd vibeping
-cp .env.example .env  # Configure your environment
+cp .env.example .env
+```
+
+Edit `.env` with your Supabase credentials:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+```
+
+Then start the dashboard:
+
+```bash
 docker compose up -d
 ```
 
