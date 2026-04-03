@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '../../../../lib/supabase';
+import { rateLimit, getRateLimitHeaders } from '@/lib/rate-limit';
 
 // ---- CORS helpers ----
 // NOTE: CORS is intentionally set to '*' because the SDK runs on customer domains.
@@ -40,6 +41,26 @@ interface EventPayload {
 
 // ---- POST /api/v1/event ----
 export async function POST(request: NextRequest) {
+  // Rate limit: 60 requests per minute per IP
+  const clientIp =
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    request.headers.get('x-real-ip') ||
+    'unknown';
+  const rl = rateLimit(`event:${clientIp}`, 60, 60_000);
+  if (!rl.success) {
+    return NextResponse.json(
+      { error: 'Rate limit exceeded. Try again later.' },
+      {
+        status: 429,
+        headers: {
+          ...CORS_HEADERS,
+          'Retry-After': String(Math.ceil((rl.reset - Date.now()) / 1000)),
+          ...getRateLimitHeaders(rl.remaining, rl.reset),
+        },
+      }
+    );
+  }
+
   try {
     // Extract API key from body, header, or query
     const body: EventPayload = await request.json();

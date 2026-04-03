@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase';
+import { rateLimit, getRateLimitHeaders } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60; // Allow up to 60s for Vercel serverless
@@ -47,6 +48,25 @@ async function pingUrl(
 }
 
 export async function GET(request: NextRequest) {
+  // Rate limit: 10 requests per minute per IP
+  const clientIp =
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    request.headers.get('x-real-ip') ||
+    'unknown';
+  const rl = rateLimit(`uptime-ping:${clientIp}`, 10, 60_000);
+  if (!rl.success) {
+    return NextResponse.json(
+      { error: 'Rate limit exceeded. Try again later.' },
+      {
+        status: 429,
+        headers: {
+          'Retry-After': String(Math.ceil((rl.reset - Date.now()) / 1000)),
+          ...getRateLimitHeaders(rl.remaining, rl.reset),
+        },
+      }
+    );
+  }
+
   // Auth check: compare secret query param against env var
   const cronSecret = process.env.UPTIME_CRON_SECRET;
   if (cronSecret) {

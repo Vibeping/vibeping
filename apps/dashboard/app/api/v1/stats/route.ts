@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient, createUserClient } from '../../../../lib/supabase';
+import { rateLimit, getRateLimitHeaders } from '@/lib/rate-limit';
 
 // Period to interval mapping
 const PERIOD_MAP: Record<string, number> = {
@@ -11,6 +12,25 @@ const PERIOD_MAP: Record<string, number> = {
 };
 
 export async function GET(request: NextRequest) {
+  // Rate limit: 30 requests per minute per IP
+  const clientIp =
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    request.headers.get('x-real-ip') ||
+    'unknown';
+  const rl = rateLimit(`stats:${clientIp}`, 30, 60_000);
+  if (!rl.success) {
+    return NextResponse.json(
+      { error: 'Rate limit exceeded. Try again later.' },
+      {
+        status: 429,
+        headers: {
+          'Retry-After': String(Math.ceil((rl.reset - Date.now()) / 1000)),
+          ...getRateLimitHeaders(rl.remaining, rl.reset),
+        },
+      }
+    );
+  }
+
   const projectId = request.nextUrl.searchParams.get('project_id');
   const period = request.nextUrl.searchParams.get('period') || '7d';
 
