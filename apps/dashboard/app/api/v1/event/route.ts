@@ -106,7 +106,9 @@ export async function POST(request: NextRequest) {
         browser: evt.browser || null,
         os: evt.os || null,
         // country will be set server-side later via IP geolocation
-        created_at: evt.timestamp ? new Date(evt.timestamp).toISOString() : new Date().toISOString(),
+        created_at: evt.timestamp
+          ? new Date(evt.timestamp).toISOString()
+          : new Date().toISOString(),
       });
     }
 

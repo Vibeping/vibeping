@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
-import { createMockQueryBuilder, createMockSupabase } from './setup';
+import { createMockQueryBuilder } from './setup';
 
 const mockUser = { id: 'user-123', email: 'test@example.com' };
 let mockGetUser: any;
@@ -79,9 +79,7 @@ describe('POST /api/uptime/checks', () => {
   });
 
   it('creates uptime check with 201', async () => {
-    const res = await POST(
-      makeRequest({ url: 'https://example.com', project_id: 'proj-1' })
-    );
+    const res = await POST(makeRequest({ url: 'https://example.com', project_id: 'proj-1' }));
     expect(res.status).toBe(201);
     const json = await res.json();
     expect(json.url).toBe('https://example.com');

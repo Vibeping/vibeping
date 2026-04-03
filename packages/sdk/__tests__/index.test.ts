@@ -1,6 +1,6 @@
 /**
  * Tests for the main SDK entry point (init, track, identify, destroy).
- * 
+ *
  * NOTE: Since index.ts uses module-level singleton state (initialized, api),
  * and the module is auto-initializing (sets up window.__vibeping, DOMContentLoaded),
  * we test the sub-modules directly and test the public API surface here.
@@ -65,9 +65,7 @@ describe('SDK init()', () => {
 
     track('test_event');
 
-    expect(warnSpy).toHaveBeenCalledWith(
-      '[VibePing] Not initialized. Call vibeping.init() first.'
-    );
+    expect(warnSpy).toHaveBeenCalledWith('[VibePing] Not initialized. Call vibeping.init() first.');
     warnSpy.mockRestore();
   });
 
@@ -77,9 +75,7 @@ describe('SDK init()', () => {
 
     identify({ name: 'test' });
 
-    expect(warnSpy).toHaveBeenCalledWith(
-      '[VibePing] Not initialized. Call vibeping.init() first.'
-    );
+    expect(warnSpy).toHaveBeenCalledWith('[VibePing] Not initialized. Call vibeping.init() first.');
     warnSpy.mockRestore();
   });
 

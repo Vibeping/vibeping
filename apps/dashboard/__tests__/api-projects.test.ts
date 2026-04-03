@@ -22,7 +22,13 @@ describe('GET /api/projects', () => {
     vi.clearAllMocks();
     mockGetUser = vi.fn().mockResolvedValue(mockUser);
     const projects = [
-      { id: 'p1', name: 'Site A', url: 'https://a.com', api_key: 'vp_abc', created_at: '2024-01-01' },
+      {
+        id: 'p1',
+        name: 'Site A',
+        url: 'https://a.com',
+        api_key: 'vp_abc',
+        created_at: '2024-01-01',
+      },
     ];
     const projectsQB = createMockQueryBuilder({ data: projects, error: null });
     // Make the chained query resolve to the list (no .single())
@@ -63,7 +69,13 @@ describe('POST /api/projects', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockGetUser = vi.fn().mockResolvedValue(mockUser);
-    const newProject = { id: 'p2', name: 'New Site', url: null, api_key: 'vp_xyz', created_at: '2024-01-02' };
+    const newProject = {
+      id: 'p2',
+      name: 'New Site',
+      url: null,
+      api_key: 'vp_xyz',
+      created_at: '2024-01-02',
+    };
     const insertQB = createMockQueryBuilder({ data: newProject, error: null });
     mockSupabase = createMockSupabase(insertQB);
   });
@@ -110,8 +122,14 @@ describe('PATCH /api/projects', () => {
     vi.clearAllMocks();
     mockGetUser = vi.fn().mockResolvedValue(mockUser);
     const existing = { id: 'p1' };
-    const existingQB = createMockQueryBuilder({ data: existing, error: null });
-    const updatedProject = { id: 'p1', name: 'Updated', url: 'https://u.com', api_key: 'vp_abc', created_at: '2024-01-01' };
+    const _existingQB = createMockQueryBuilder({ data: existing, error: null });
+    const updatedProject = {
+      id: 'p1',
+      name: 'Updated',
+      url: 'https://u.com',
+      api_key: 'vp_abc',
+      created_at: '2024-01-01',
+    };
     const updateQB = createMockQueryBuilder({ data: updatedProject, error: null });
 
     // Need to differentiate between select (ownership check) and update

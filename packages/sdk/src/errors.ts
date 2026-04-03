@@ -16,10 +16,7 @@ export interface ErrorTracker {
 }
 
 /** Create an error tracker that captures uncaught errors and promise rejections */
-export function createErrorTracker(
-  config: ResolvedConfig,
-  transport: Transport
-): ErrorTracker {
+export function createErrorTracker(config: ResolvedConfig, transport: Transport): ErrorTracker {
   /** Map of "message|file" -> last seen timestamp for dedup */
   const seen = new Map<string, number>();
   const cleanupFns: Array<() => void> = [];
@@ -120,9 +117,7 @@ export function createErrorTracker(
     };
 
     window.addEventListener('unhandledrejection', onUnhandledRejection);
-    cleanupFns.push(() =>
-      window.removeEventListener('unhandledrejection', onUnhandledRejection)
-    );
+    cleanupFns.push(() => window.removeEventListener('unhandledrejection', onUnhandledRejection));
 
     if (config.debug) {
       console.debug('[VibePing] Error tracking started');

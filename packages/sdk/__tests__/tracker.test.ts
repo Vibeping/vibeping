@@ -50,7 +50,7 @@ describe('Tracker', () => {
     });
 
     it('should create a new ID if sessionStorage is cleared', () => {
-      const sid1 = getSessionId();
+      getSessionId();
       sessionStorage.clear();
       const sid2 = getSessionId();
       // They might be different (crypto.randomUUID returns different values)

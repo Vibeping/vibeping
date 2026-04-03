@@ -63,7 +63,7 @@ describe('POST /api/v1/event', () => {
 
   it('rejects request with empty events array', async () => {
     const res = await POST(makeRequest({ apiKey: 'test-key', events: [] }));
-    const json = await res.json();
+    await res.json();
     expect(res.status).toBe(400);
   });
 
@@ -77,9 +77,7 @@ describe('POST /api/v1/event', () => {
 
   it('returns 401 for invalid API key', async () => {
     projectQueryBuilder.single.mockResolvedValue({ data: null, error: { message: 'not found' } });
-    const res = await POST(
-      makeRequest({ apiKey: 'bad-key', events: [{ type: 'pageview' }] })
-    );
+    const res = await POST(makeRequest({ apiKey: 'bad-key', events: [{ type: 'pageview' }] }));
     expect(res.status).toBe(401);
   });
 
@@ -94,9 +92,7 @@ describe('POST /api/v1/event', () => {
   });
 
   it('skips invalid event types and returns 400 if none valid', async () => {
-    const res = await POST(
-      makeRequest({ apiKey: 'test-key', events: [{ type: 'INVALID' }] })
-    );
+    const res = await POST(makeRequest({ apiKey: 'test-key', events: [{ type: 'INVALID' }] }));
     const json = await res.json();
     expect(res.status).toBe(400);
     expect(json.error).toMatch(/No valid events/);
@@ -134,9 +130,7 @@ describe('POST /api/v1/event', () => {
       return projectQueryBuilder;
     });
 
-    const res = await POST(
-      makeRequest({ apiKey: 'test-key', events: [{ type: 'pageview' }] })
-    );
+    const res = await POST(makeRequest({ apiKey: 'test-key', events: [{ type: 'pageview' }] }));
     expect(res.status).toBe(500);
   });
 });

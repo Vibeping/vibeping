@@ -47,8 +47,9 @@ describe('VitalsTracker', () => {
     tracker.start();
 
     // Allow the dynamic import promise to resolve/reject
-    await vi.dynamicImportSettled?.() ?? new Promise(r => setTimeout(r, 10));
-    await new Promise(r => setTimeout(r, 0));
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    (await vi.dynamicImportSettled?.()) ?? (await new Promise((r) => setTimeout(r, 10)));
+    await new Promise((r) => setTimeout(r, 0));
 
     debugSpy.mockRestore();
   });

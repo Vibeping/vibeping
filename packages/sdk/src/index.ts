@@ -69,7 +69,9 @@ export function init(config: VibePingConfig): VibePingAPI {
   }
 
   if (!config.apiUrl) {
-    console.warn('[VibePing] No apiUrl configured. Events will not be sent. Set apiUrl in vibeping.init({ apiUrl: ... })');
+    console.warn(
+      '[VibePing] No apiUrl configured. Events will not be sent. Set apiUrl in vibeping.init({ apiUrl: ... })'
+    );
   }
 
   const resolved = resolveConfig(config);
@@ -109,10 +111,7 @@ export function init(config: VibePingConfig): VibePingAPI {
 /**
  * Track a custom event (must call init() first)
  */
-export function track(
-  name: string,
-  properties?: Record<string, string | number | boolean>
-): void {
+export function track(name: string, properties?: Record<string, string | number | boolean>): void {
   if (!api) {
     console.warn('[VibePing] Not initialized. Call vibeping.init() first.');
     return;
@@ -123,9 +122,7 @@ export function track(
 /**
  * Identify user traits (must call init() first)
  */
-export function identify(
-  traits: Record<string, string | number | boolean>
-): void {
+export function identify(traits: Record<string, string | number | boolean>): void {
   if (!api) {
     console.warn('[VibePing] Not initialized. Call vibeping.init() first.');
     return;

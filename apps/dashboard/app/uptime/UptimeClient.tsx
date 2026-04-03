@@ -27,7 +27,7 @@ interface Props {
   pings: Ping[];
 }
 
-export default function UptimeClient({ projectId, hasChecks, checks, pings }: Props) {
+export default function UptimeClient({ projectId, hasChecks, pings }: Props) {
   const [url, setUrl] = useState('');
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState('');
@@ -94,14 +94,9 @@ export default function UptimeClient({ projectId, hasChecks, checks, pings }: Pr
 
   // Response time chart (last 24h)
   const twentyFourAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-  const recentPings = pings
-    .filter((p) => new Date(p.created_at) >= twentyFourAgo)
-    .reverse(); // oldest first for chart
+  const recentPings = pings.filter((p) => new Date(p.created_at) >= twentyFourAgo).reverse(); // oldest first for chart
 
-  const maxResponseTime = Math.max(
-    ...recentPings.map((p) => p.response_time_ms || 0),
-    1
-  );
+  const maxResponseTime = Math.max(...recentPings.map((p) => p.response_time_ms || 0), 1);
 
   // Sample to max ~48 bars for display
   const step = Math.max(1, Math.floor(recentPings.length / 48));
@@ -161,15 +156,11 @@ export default function UptimeClient({ projectId, hasChecks, checks, pings }: Pr
             <tbody className="divide-y divide-white/5">
               {pings.slice(0, 50).map((ping) => (
                 <tr key={ping.id}>
-                  <td className="py-2.5 text-sm text-slate-300">
-                    {timeAgo(ping.created_at)}
-                  </td>
+                  <td className="py-2.5 text-sm text-slate-300">{timeAgo(ping.created_at)}</td>
                   <td className="py-2.5">
                     <span
                       className={`inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full ${
-                        ping.is_up
-                          ? 'bg-green-500/10 text-green-400'
-                          : 'bg-red-500/10 text-red-400'
+                        ping.is_up ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'
                       }`}
                     >
                       <span

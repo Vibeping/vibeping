@@ -35,7 +35,9 @@ vi.stubGlobal('screen', { width: 1920, height: 1080 });
 class MockPerformanceObserver {
   observe() {}
   disconnect() {}
-  takeRecords() { return []; }
+  takeRecords() {
+    return [];
+  }
 }
 vi.stubGlobal('PerformanceObserver', MockPerformanceObserver);
 

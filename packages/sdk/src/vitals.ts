@@ -13,11 +13,7 @@ export interface VitalsTracker {
 }
 
 /** Build a vital event */
-function buildVitalEvent(
-  name: string,
-  value: number,
-  rating: string
-): VitalEvent {
+function buildVitalEvent(name: string, value: number, rating: string): VitalEvent {
   return {
     type: EventType.Vital,
     timestamp: new Date().toISOString(),
@@ -61,15 +57,13 @@ function rateINP(value: number): string {
 }
 
 /** Try to use the web-vitals library */
-async function tryWebVitals(
-  config: ResolvedConfig,
-  transport: Transport
-): Promise<boolean> {
+async function tryWebVitals(config: ResolvedConfig, transport: Transport): Promise<boolean> {
   try {
     // Dynamic import — only works if web-vitals is installed
     const wv = await import('web-vitals');
 
-    const report = (name: string, rateFn: (v: number) => string) =>
+    const report =
+      (name: string, rateFn: (v: number) => string) =>
       (metric: { value: number }): void => {
         transport.send(buildVitalEvent(name, metric.value, rateFn(metric.value)));
         if (config.debug) {
@@ -90,10 +84,7 @@ async function tryWebVitals(
 }
 
 /** Fallback: use PerformanceObserver for basic metrics */
-function fallbackVitals(
-  config: ResolvedConfig,
-  transport: Transport
-): void {
+function fallbackVitals(config: ResolvedConfig, transport: Transport): void {
   if (typeof PerformanceObserver === 'undefined') return;
 
   // TTFB from navigation timing
@@ -160,10 +151,7 @@ function fallbackVitals(
 }
 
 /** Create a web vitals tracker */
-export function createVitalsTracker(
-  config: ResolvedConfig,
-  transport: Transport
-): VitalsTracker {
+export function createVitalsTracker(config: ResolvedConfig, transport: Transport): VitalsTracker {
   return {
     start(): void {
       if (typeof window === 'undefined') return;

@@ -45,25 +45,25 @@ npm install @vibeping/sdk
 ```
 
 ```typescript
-import { vibeping } from '@vibeping/sdk'
+import { vibeping } from '@vibeping/sdk';
 
-vibeping.init({ id: 'vp_your_project_id' })
+vibeping.init({ id: 'vp_your_project_id' });
 
 // Optional: track custom events
-vibeping.track('signup_completed', { plan: 'free' })
+vibeping.track('signup_completed', { plan: 'free' });
 ```
 
 ## Supported Frameworks
 
 VibePing works anywhere JavaScript runs. Tested with:
 
-| Framework | Support | Notes |
-|-----------|---------|-------|
-| **React** | ✅ | Auto-detects React Router for SPA pageviews |
-| **Next.js** | ✅ | Works with App Router and Pages Router |
-| **Vue** | ✅ | Works with Vue Router |
-| **Svelte** | ✅ | Works with SvelteKit |
-| **Vanilla HTML** | ✅ | Just drop in the script tag |
+| Framework        | Support | Notes                                       |
+| ---------------- | ------- | ------------------------------------------- |
+| **React**        | ✅      | Auto-detects React Router for SPA pageviews |
+| **Next.js**      | ✅      | Works with App Router and Pages Router      |
+| **Vue**          | ✅      | Works with Vue Router                       |
+| **Svelte**       | ✅      | Works with SvelteKit                        |
+| **Vanilla HTML** | ✅      | Just drop in the script tag                 |
 
 The SDK is framework-agnostic. If your app runs in a browser, VibePing works.
 
@@ -75,11 +75,11 @@ Initialize VibePing. Call this once, as early as possible.
 
 ```typescript
 vibeping.init({
-  id: 'vp_your_project_id',  // Required. Your project ID from the dashboard.
-  trackErrors: true,          // Default: true. Auto-capture JS errors.
-  trackVitals: true,          // Default: true. Track Core Web Vitals.
-  debug: false,               // Default: false. Log events to console.
-})
+  id: 'vp_your_project_id', // Required. Your project ID from the dashboard.
+  trackErrors: true, // Default: true. Auto-capture JS errors.
+  trackVitals: true, // Default: true. Track Core Web Vitals.
+  debug: false, // Default: false. Log events to console.
+});
 ```
 
 ### `vibeping.track(event, properties?)`
@@ -87,8 +87,8 @@ vibeping.init({
 Track a custom event.
 
 ```typescript
-vibeping.track('button_clicked', { label: 'Buy Now' })
-vibeping.track('signup_completed', { plan: 'pro', source: 'landing' })
+vibeping.track('button_clicked', { label: 'Buy Now' });
+vibeping.track('signup_completed', { plan: 'pro', source: 'landing' });
 ```
 
 ### `vibeping.identify(userId, traits?)`
@@ -96,7 +96,7 @@ vibeping.track('signup_completed', { plan: 'pro', source: 'landing' })
 Associate events with a user. Call after login.
 
 ```typescript
-vibeping.identify('user_123', { email: 'dev@example.com', plan: 'pro' })
+vibeping.identify('user_123', { email: 'dev@example.com', plan: 'pro' });
 ```
 
 ## Self-Hosting

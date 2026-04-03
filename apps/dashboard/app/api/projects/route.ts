@@ -177,11 +177,7 @@ export async function DELETE(request: NextRequest) {
     await supabase.from('events').delete().eq('project_id', id);
     await supabase.from('uptime_checks').delete().eq('project_id', id);
 
-    const { error } = await supabase
-      .from('projects')
-      .delete()
-      .eq('id', id)
-      .eq('user_id', user.id);
+    const { error } = await supabase.from('projects').delete().eq('id', id).eq('user_id', user.id);
 
     if (error) {
       console.error('[VibePing] Project delete error:', error);

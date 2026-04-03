@@ -3,6 +3,31 @@
   "version": "0.1.0",
   "type": "module",
   "description": "Lightweight analytics, error tracking, and web vitals SDK for VibePing",
+  "author": "VibePing <hello@vibeping.dev>",
+  "license": "AGPL-3.0",
+  "homepage": "https://vibeping.dev",
+  "bugs": {
+    "url": "https://github.com/Vibeping/vibeping/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vibeping/vibeping-oss.git",
+    "directory": "packages/sdk"
+  },
+  "keywords": [
+    "analytics",
+    "tracking",
+    "web-vitals",
+    "error-tracking",
+    "pageview",
+    "typescript",
+    "privacy",
+    "open-source",
+    "vibe-coding"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "dist/vibeping.umd.js",
   "module": "dist/vibeping.esm.js",
   "types": "dist/index.d.ts",
@@ -22,7 +47,8 @@
     "lint": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "prepublishOnly": "pnpm build && pnpm test"
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^11.1.0",
@@ -41,11 +67,5 @@
       "optional": true
     }
   },
-  "sideEffects": false,
-  "license": "AGPL-3.0",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/vibeping/vibeping-oss.git",
-    "directory": "packages/sdk"
-  }
+  "sideEffects": false
 }

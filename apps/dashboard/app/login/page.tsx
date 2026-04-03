@@ -41,24 +41,17 @@ export default function LoginPage() {
     <div className="min-h-screen bg-[#0A0F1C] flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white font-outfit">
-            🏓 VibePing
-          </h1>
-          <p className="text-slate-400 mt-2 text-sm">
-            AI Growth Co-Pilot for your app
-          </p>
+          <h1 className="text-3xl font-bold text-white font-outfit">🏓 VibePing</h1>
+          <p className="text-slate-400 mt-2 text-sm">AI Growth Co-Pilot for your app</p>
         </div>
 
         <div className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl p-8">
           {sent ? (
             <div className="text-center">
               <div className="text-4xl mb-4">✉️</div>
-              <h2 className="text-xl font-semibold text-white mb-2">
-                Check your email
-              </h2>
+              <h2 className="text-xl font-semibold text-white mb-2">Check your email</h2>
               <p className="text-slate-400 text-sm">
-                We sent a magic link to{' '}
-                <span className="text-cyan-400">{email}</span>
+                We sent a magic link to <span className="text-cyan-400">{email}</span>
               </p>
             </div>
           ) : (

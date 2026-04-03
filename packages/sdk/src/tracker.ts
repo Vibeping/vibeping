@@ -58,10 +58,7 @@ function buildPageviewEvent(sessionId: string): PageviewEvent {
 }
 
 /** Build a session event */
-function buildSessionEvent(
-  sessionId: string,
-  action: 'start' | 'end'
-): SessionEvent {
+function buildSessionEvent(sessionId: string, action: 'start' | 'end'): SessionEvent {
   return {
     type: EventType.Session,
     timestamp: new Date().toISOString(),
@@ -118,16 +115,12 @@ export function createTracker(config: ResolvedConfig, transport: Transport): Tra
     cleanupFns.push(() => window.removeEventListener('popstate', onPopState));
 
     // Monkey-patch pushState and replaceState for SPA navigation detection
-    history.pushState = function (
-      ...args: Parameters<typeof history.pushState>
-    ): void {
+    history.pushState = function (...args: Parameters<typeof history.pushState>): void {
       origPushState(...args);
       onUrlChange();
     };
 
-    history.replaceState = function (
-      ...args: Parameters<typeof history.replaceState>
-    ): void {
+    history.replaceState = function (...args: Parameters<typeof history.replaceState>): void {
       origReplaceState(...args);
       onUrlChange();
     };
@@ -144,9 +137,7 @@ export function createTracker(config: ResolvedConfig, transport: Transport): Tra
       }
     };
     document.addEventListener('visibilitychange', onVisibilityChange);
-    cleanupFns.push(() =>
-      document.removeEventListener('visibilitychange', onVisibilityChange)
-    );
+    cleanupFns.push(() => document.removeEventListener('visibilitychange', onVisibilityChange));
 
     if (config.debug) {
       console.debug('[VibePing] Tracker started, session:', sessionId);

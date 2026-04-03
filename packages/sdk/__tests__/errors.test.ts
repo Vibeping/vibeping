@@ -70,9 +70,7 @@ describe('ErrorTracker', () => {
     event.reason = error;
 
     // Manually create and dispatch a PromiseRejectionEvent-like object
-    window.dispatchEvent(
-      Object.assign(new Event('unhandledrejection'), { reason: error })
-    );
+    window.dispatchEvent(Object.assign(new Event('unhandledrejection'), { reason: error }));
 
     expect(transport.send).toHaveBeenCalledTimes(1);
     const captured = transport.events[0] as any;

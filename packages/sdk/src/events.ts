@@ -4,12 +4,7 @@
  */
 
 import { EventType } from './types';
-import type {
-  ResolvedConfig,
-  Transport,
-  CustomEvent,
-  IdentifyEvent,
-} from './types';
+import type { ResolvedConfig, Transport, CustomEvent, IdentifyEvent } from './types';
 import { getSessionId } from './tracker';
 
 /** Allowed property value types */
@@ -30,26 +25,17 @@ export interface EventTracker {
 
 /** Validate that a value is a valid property type */
 function isValidPropValue(val: unknown): val is PropValue {
-  return (
-    typeof val === 'string' ||
-    typeof val === 'number' ||
-    typeof val === 'boolean'
-  );
+  return typeof val === 'string' || typeof val === 'number' || typeof val === 'boolean';
 }
 
 /** Validate and sanitize properties object */
-function validateProps(
-  props: Record<string, unknown>,
-  debug: boolean
-): Record<string, PropValue> {
+function validateProps(props: Record<string, unknown>, debug: boolean): Record<string, PropValue> {
   const result: Record<string, PropValue> = {};
   const keys = Object.keys(props);
 
   if (keys.length > MAX_PROP_KEYS) {
     if (debug) {
-      console.warn(
-        `[VibePing] Properties exceed ${MAX_PROP_KEYS} keys, truncating`
-      );
+      console.warn(`[VibePing] Properties exceed ${MAX_PROP_KEYS} keys, truncating`);
     }
     keys.length = MAX_PROP_KEYS;
   }
@@ -59,9 +45,7 @@ function validateProps(
     if (isValidPropValue(val)) {
       result[key] = val;
     } else if (debug) {
-      console.warn(
-        `[VibePing] Property "${key}" has invalid type ${typeof val}, skipping`
-      );
+      console.warn(`[VibePing] Property "${key}" has invalid type ${typeof val}, skipping`);
     }
   }
 
@@ -69,10 +53,7 @@ function validateProps(
 }
 
 /** Create a custom event tracker */
-export function createEventTracker(
-  config: ResolvedConfig,
-  transport: Transport
-): EventTracker {
+export function createEventTracker(config: ResolvedConfig, transport: Transport): EventTracker {
   return {
     track(name: string, properties?: Record<string, PropValue>): void {
       // Validate event name
@@ -85,9 +66,7 @@ export function createEventTracker(
 
       if (name.length > MAX_NAME_LENGTH) {
         if (config.debug) {
-          console.warn(
-            `[VibePing] Event name exceeds ${MAX_NAME_LENGTH} chars, truncating`
-          );
+          console.warn(`[VibePing] Event name exceeds ${MAX_NAME_LENGTH} chars, truncating`);
         }
         name = name.slice(0, MAX_NAME_LENGTH);
       }
@@ -120,10 +99,7 @@ export function createEventTracker(
         return;
       }
 
-      const validTraits = validateProps(
-        traits as Record<string, unknown>,
-        config.debug
-      );
+      const validTraits = validateProps(traits as Record<string, unknown>, config.debug);
 
       const event: IdentifyEvent = {
         type: EventType.Identify,

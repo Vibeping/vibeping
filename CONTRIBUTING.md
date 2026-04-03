@@ -101,6 +101,7 @@ We keep it simple:
 - **Formatting** — We use the project's ESLint and Prettier config. Run `pnpm lint` before submitting.
 
 For the SDK specifically:
+
 - **Zero dependencies** — Don't add npm packages. The SDK must have no runtime dependencies.
 - **Size budget** — Keep it under 5KB gzipped. Run `pnpm build` in `packages/sdk` and check the output size.
 

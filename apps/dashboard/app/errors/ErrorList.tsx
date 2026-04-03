@@ -67,7 +67,11 @@ export default function ErrorList({ errors }: { errors: GroupedError[] }) {
           const payload = latestOccurrence?.payload as Record<string, unknown> | null;
           const props = latestOccurrence?.properties as Record<string, unknown> | null;
           const stack = (payload?.stack as string) || (props?.stack as string) || '';
-          const browser = (payload?.browser as string) || (props?.browser as string) || (props?.userAgent as string) || '';
+          const browser =
+            (payload?.browser as string) ||
+            (props?.browser as string) ||
+            (props?.userAgent as string) ||
+            '';
           const os = (payload?.os as string) || (props?.os as string) || '';
           const pageUrl = latestOccurrence?.url || (payload?.url as string) || '';
 
@@ -82,14 +86,8 @@ export default function ErrorList({ errors }: { errors: GroupedError[] }) {
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-red-400 truncate">
-                      {err.message}
-                    </p>
-                    {err.url && (
-                      <p className="text-xs text-slate-500 truncate mt-0.5">
-                        {err.url}
-                      </p>
-                    )}
+                    <p className="text-sm font-medium text-red-400 truncate">{err.message}</p>
+                    {err.url && <p className="text-xs text-slate-500 truncate mt-0.5">{err.url}</p>}
                   </div>
                   <div className="flex items-center gap-4 text-xs text-slate-400 shrink-0">
                     <span className="bg-red-500/10 text-red-400 px-2 py-0.5 rounded-full font-medium">
@@ -103,7 +101,11 @@ export default function ErrorList({ errors }: { errors: GroupedError[] }) {
                       stroke="currentColor"
                       strokeWidth={2}
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                      />
                     </svg>
                   </div>
                 </div>
@@ -145,7 +147,8 @@ export default function ErrorList({ errors }: { errors: GroupedError[] }) {
                   {/* Recent occurrences */}
                   <div className="mt-4">
                     <p className="text-xs text-slate-500 mb-2">
-                      Recent Occurrences ({Math.min(err.occurrences.length, 5)} of {err.occurrences.length})
+                      Recent Occurrences ({Math.min(err.occurrences.length, 5)} of{' '}
+                      {err.occurrences.length})
                     </p>
                     <div className="space-y-1">
                       {err.occurrences.slice(0, 5).map((occ) => (
@@ -154,7 +157,9 @@ export default function ErrorList({ errors }: { errors: GroupedError[] }) {
                           className="flex items-center justify-between text-xs bg-white/5 rounded px-3 py-1.5"
                         >
                           <span className="text-slate-400 truncate">{occ.url || '—'}</span>
-                          <span className="text-slate-500 shrink-0 ml-2">{timeAgo(occ.created_at)}</span>
+                          <span className="text-slate-500 shrink-0 ml-2">
+                            {timeAgo(occ.created_at)}
+                          </span>
                         </div>
                       ))}
                     </div>

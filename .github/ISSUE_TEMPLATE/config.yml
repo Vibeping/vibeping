@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions & Discussions
+    url: https://github.com/Vibeping/vibeping/discussions
+    about: Ask questions, share ideas, or discuss VibePing
+  - name: Documentation
+    url: https://vibeping.dev
+    about: Check the docs before opening an issue

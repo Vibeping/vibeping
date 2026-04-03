@@ -103,7 +103,7 @@ async function getStats(projectId: string) {
     }
   });
 
-  const avg = (arr: number[]) => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null;
+  const avg = (arr: number[]) => (arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null);
 
   return {
     totalViews: totalViews || 0,
@@ -155,8 +155,18 @@ export default async function OverviewPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard
           icon={
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"
+              />
             </svg>
           }
           label="Total Visitors"
@@ -165,8 +175,18 @@ export default async function OverviewPage() {
         />
         <StatCard
           icon={
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+              />
             </svg>
           }
           label="Unique Sessions"
@@ -174,8 +194,18 @@ export default async function OverviewPage() {
         />
         <StatCard
           icon={
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+              />
             </svg>
           }
           label="Errors"
@@ -189,13 +219,15 @@ export default async function OverviewPage() {
                 stats.uptimeStatus === 'up'
                   ? 'bg-green-400'
                   : stats.uptimeStatus === 'down'
-                  ? 'bg-red-400'
-                  : 'bg-slate-500'
+                    ? 'bg-red-400'
+                    : 'bg-slate-500'
               }`}
             />
           }
           label="Uptime Status"
-          value={stats.uptimeStatus === 'up' ? 'Online' : stats.uptimeStatus === 'down' ? 'Down' : 'N/A'}
+          value={
+            stats.uptimeStatus === 'up' ? 'Online' : stats.uptimeStatus === 'down' ? 'Down' : 'N/A'
+          }
         />
       </div>
 
@@ -215,8 +247,12 @@ export default async function OverviewPage() {
               <tbody className="divide-y divide-white/5">
                 {stats.topPages.map((page) => (
                   <tr key={page.url}>
-                    <td className="py-2.5 text-sm text-slate-300 truncate max-w-[200px]">{page.url}</td>
-                    <td className="py-2.5 text-sm text-white text-right font-medium">{page.count}</td>
+                    <td className="py-2.5 text-sm text-slate-300 truncate max-w-[200px]">
+                      {page.url}
+                    </td>
+                    <td className="py-2.5 text-sm text-white text-right font-medium">
+                      {page.count}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -240,8 +276,12 @@ export default async function OverviewPage() {
               <tbody className="divide-y divide-white/5">
                 {stats.topReferrers.map((ref) => (
                   <tr key={ref.referrer}>
-                    <td className="py-2.5 text-sm text-slate-300 truncate max-w-[200px]">{ref.referrer}</td>
-                    <td className="py-2.5 text-sm text-white text-right font-medium">{ref.count}</td>
+                    <td className="py-2.5 text-sm text-slate-300 truncate max-w-[200px]">
+                      {ref.referrer}
+                    </td>
+                    <td className="py-2.5 text-sm text-white text-right font-medium">
+                      {ref.count}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -261,7 +301,8 @@ export default async function OverviewPage() {
               {stats.recentErrors.map((err: Record<string, unknown>, i: number) => (
                 <div key={i} className="bg-red-500/5 border border-red-500/10 rounded-lg p-3">
                   <p className="text-sm text-red-400 font-medium truncate">
-                    {(err.payload as Record<string, unknown>)?.message as string || 'Unknown error'}
+                    {((err.payload as Record<string, unknown>)?.message as string) ||
+                      'Unknown error'}
                   </p>
                   <p className="text-xs text-slate-500 mt-1">
                     {new Date(err.created_at as string).toLocaleString()}
@@ -271,8 +312,18 @@ export default async function OverviewPage() {
             </div>
           ) : (
             <div className="flex items-center gap-2 text-green-400 text-sm">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
               No errors — everything is clean!
             </div>

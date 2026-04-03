@@ -16,9 +16,7 @@ export default function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center py-20 px-4">
       <div className="text-6xl mb-6">🏓</div>
-      <h2 className="text-2xl font-bold text-white mb-2 font-outfit">
-        No data yet
-      </h2>
+      <h2 className="text-2xl font-bold text-white mb-2 font-outfit">No data yet</h2>
       <p className="text-slate-400 text-center max-w-md mb-8">
         Install the VibePing SDK to start tracking pageviews, errors, uptime, and web vitals.
       </p>
@@ -41,9 +39,7 @@ export default function EmptyState() {
       <div className="mt-8 text-center">
         <p className="text-slate-500 text-sm">
           Or install via npm:{' '}
-          <code className="text-cyan-400 bg-white/5 px-2 py-0.5 rounded">
-            npm i @vibeping/sdk
-          </code>
+          <code className="text-cyan-400 bg-white/5 px-2 py-0.5 rounded">npm i @vibeping/sdk</code>
         </p>
       </div>
     </div>

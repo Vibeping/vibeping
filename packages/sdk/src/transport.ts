@@ -70,7 +70,11 @@ export function createTransport(config: ResolvedConfig): Transport {
     buffer = [];
     const payload = buildPayload(events);
 
-    if (useBeacon && typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
+    if (
+      useBeacon &&
+      typeof navigator !== 'undefined' &&
+      typeof navigator.sendBeacon === 'function'
+    ) {
       sendViaBeacon(payload);
     } else {
       void sendViaFetch(payload);

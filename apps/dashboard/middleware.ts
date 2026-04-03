@@ -28,11 +28,17 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  const { data: { session } } = await supabase.auth.getSession();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
   // Allow public routes
   const { pathname } = request.nextUrl;
-  if (pathname.startsWith('/login') || pathname.startsWith('/auth/callback') || pathname.startsWith('/api/v1/')) {
+  if (
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/auth/callback') ||
+    pathname.startsWith('/api/v1/')
+  ) {
     return response;
   }
 

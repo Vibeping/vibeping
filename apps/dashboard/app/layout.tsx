@@ -22,12 +22,9 @@ export const metadata: Metadata = {
   description: 'Analytics, error tracking, uptime monitoring, and AI insights for vibe-coded apps.',
 };
 
-export default async function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const user = await getUser();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const isAuthPage = false; // Layout always renders; login page has its own full layout
 
   return (

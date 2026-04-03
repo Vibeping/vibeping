@@ -1,0 +1,64 @@
+name: Bug Report
+description: Report a bug in VibePing
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Fill out the form below and we'll look into it.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened?
+      placeholder: Describe the bug clearly
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce this?
+      placeholder: |
+        1. Install SDK via ...
+        2. Call vibeping.init(...)
+        3. Navigate to ...
+        4. See error in console
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What should have happened?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Which part of VibePing is affected?
+      options:
+        - SDK (packages/sdk)
+        - Dashboard (apps/dashboard)
+        - API (event ingestion / stats)
+        - Self-hosted (Docker)
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: SDK or dashboard version
+      placeholder: '0.1.0'
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Logs, screenshots, environment details

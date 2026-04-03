@@ -123,7 +123,7 @@ describe('Transport', () => {
     transport.flush();
 
     // Wait for the async retry to complete
-    await new Promise(r => setTimeout(r, 50));
+    await new Promise((r) => setTimeout(r, 50));
 
     expect(mockFetch).toHaveBeenCalledTimes(2);
     transport.destroy();
@@ -140,7 +140,7 @@ describe('Transport', () => {
     transport.send(makeFakeEvent());
     transport.flush();
 
-    await new Promise(r => setTimeout(r, 50));
+    await new Promise((r) => setTimeout(r, 50));
 
     expect(mockFetch).toHaveBeenCalledTimes(2);
     transport.destroy();
