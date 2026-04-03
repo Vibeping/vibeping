@@ -1,47 +1,51 @@
+<div align="center">
+
 # 🏓 VibePing
 
-**The AI Growth Co-Pilot for Vibe-Coded Apps**
+### The AI Growth Co-Pilot for Vibe-Coded Apps
+
+Analytics · Error Tracking · Uptime Monitoring — one script tag, zero cookies.
 
 [![npm version](https://img.shields.io/npm/v/@vibeping/sdk.svg)](https://www.npmjs.com/package/@vibeping/sdk)
 [![Bundle Size](https://img.shields.io/bundlephobia/minzip/@vibeping/sdk)](https://bundlephobia.com/package/@vibeping/sdk)
-[![CI](https://github.com/Vibeping/vibeping/actions/workflows/ci.yml/badge.svg)](https://github.com/Vibeping/vibeping/actions/workflows/ci.yml)
-[![GitHub stars](https://img.shields.io/github/stars/Vibeping/vibeping)](https://github.com/Vibeping/vibeping/stargazers)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
-[![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue.svg)](https://www.typescriptlang.org/)
+[![GitHub stars](https://img.shields.io/github/stars/Vibeping/vibeping)](https://github.com/Vibeping/vibeping/stargazers)
+[![CI](https://github.com/Vibeping/vibeping/actions/workflows/ci.yml/badge.svg)](https://github.com/Vibeping/vibeping/actions/workflows/ci.yml)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-Analytics, error tracking, and uptime monitoring — all in one script tag.
-Built for vibe coders using **Lovable**, **Bolt.new**, **Cursor**, and **Replit**.
+[Docs](https://vibeping.dev/docs) · [Dashboard](https://app.vibeping.dev) · [Website](https://vibeping.dev)
+
+</div>
 
 ---
 
-## Features
+Built for devs shipping with **Lovable**, **Bolt.new**, **Cursor**, and **Replit**. Drop in a 3.3KB script and get the full picture — pageviews, errors, vitals, uptime — without the bloat of Mixpanel or the complexity of PostHog.
 
-- **📊 Visitor Analytics** — Pageviews, unique visitors, referrers, countries. Auto-detects React Router & Next.js.
-- **🔴 Error Tracking** — Auto-captures JS errors with stack traces. No setup required.
-- **💚 Uptime Monitoring** — Is your app online? Response times + alerts when it goes down.
-- **⚡ Web Vitals** — LCP, FID, CLS tracked automatically.
-- **🎯 Custom Events** — Track signups, clicks, conversions with `vibeping.track()`.
-- **🔒 Privacy-First** — No cookies. No PII. No consent banners needed.
+No cookies. No PII. No consent banners. GDPR-friendly out of the box.
 
-## Dashboard Screenshots
+<!--
+## Demo
 
-<!-- screenshots coming soon -->
+![VibePing Dashboard Demo](assets/demo.gif)
 
-## Quick Start
+TODO: Record a ~30s GIF showing: add script tag → see first pageview → error captured → vitals dashboard.
+Place the file at assets/demo.gif.
+-->
 
-### Hosted Version (easiest)
+## Quickstart
 
-Use the hosted version at **[app.vibeping.dev](https://app.vibeping.dev)** — no setup required.
-Sign up, create a project, and add the script tag:
+### Option A: Script Tag (fastest)
 
 ```html
-<script src="https://app.vibeping.dev/sdk/v1.js" data-id="vp_your_api_key"></script>
+<script
+  src="https://cdn.jsdelivr.net/npm/@vibeping/sdk@latest/dist/vibeping.umd.js"
+  data-id="vp_your_project_id"
+></script>
 ```
 
-That's it. Analytics, errors, and vitals are now tracked.
+Done. Pageviews, errors, and vitals are now tracked.
 
-### NPM Package
+### Option B: npm
 
 ```bash
 npm install @vibeping/sdk
@@ -51,45 +55,51 @@ npm install @vibeping/sdk
 import { vibeping } from '@vibeping/sdk';
 
 vibeping.init({ id: 'vp_your_project_id' });
-// By default, events are sent to https://app.vibeping.dev
-// For self-hosted, pass apiUrl: vibeping.init({ id: '...', apiUrl: 'https://your-instance.com' })
 
-// Optional: track custom events
+// Track custom events
 vibeping.track('signup_completed', { plan: 'free' });
 ```
 
-## Supported Frameworks
+> **Want the hosted version?** Skip setup entirely at [app.vibeping.dev](https://app.vibeping.dev) — free tier available.
 
-VibePing works anywhere JavaScript runs. Tested with:
+## Features
 
-| Framework        | Support | Notes                                       |
-| ---------------- | ------- | ------------------------------------------- |
-| **React**        | ✅      | Auto-detects React Router for SPA pageviews |
-| **Next.js**      | ✅      | Works with App Router and Pages Router      |
-| **Vue**          | ✅      | Works with Vue Router                       |
-| **Svelte**       | ✅      | Works with SvelteKit                        |
-| **Vanilla HTML** | ✅      | Just drop in the script tag                 |
+- 📊 **Visitor Analytics** — Pageviews, uniques, referrers, countries. Auto-detects React Router & Next.js SPA navigation.
+- 🔴 **Error Tracking** — JS errors with stack traces, caught automatically. Zero config.
+- 💚 **Uptime Monitoring** — Response times + alerts when your app goes down.
+- ⚡ **Web Vitals** — LCP, FID, CLS tracked out of the box.
+- 🎯 **Custom Events** — `vibeping.track('signup', { plan: 'pro' })` — that's it.
+- 🔒 **Privacy-First** — No cookies. No PII. No consent banners needed.
+- 🪶 **Tiny** — 3.3KB gzipped. Zero dependencies. Ships as UMD + ESM.
 
-The SDK is framework-agnostic. If your app runs in a browser, VibePing works.
+## Framework Support
+
+Works anywhere JavaScript runs. Tested with:
+
+| Framework        | Notes                                       |
+| ---------------- | ------------------------------------------- |
+| **React**        | Auto-detects React Router for SPA pageviews |
+| **Next.js**      | App Router + Pages Router                   |
+| **Vue**          | Works with Vue Router                       |
+| **Svelte**       | Works with SvelteKit                        |
+| **Vanilla HTML** | Just drop in the script tag                 |
 
 ## API Reference
 
 ### `vibeping.init(options)`
 
-Initialize VibePing. Call this once, as early as possible.
+Initialize VibePing. Call once, as early as possible.
 
 ```typescript
 vibeping.init({
-  id: 'vp_your_project_id', // Required. Your project ID from the dashboard.
-  trackErrors: true, // Default: true. Auto-capture JS errors.
-  trackVitals: true, // Default: true. Track Core Web Vitals.
-  debug: false, // Default: false. Log events to console.
+  id: 'vp_your_project_id', // Required
+  trackErrors: true, // Default: true
+  trackVitals: true, // Default: true
+  debug: false, // Default: false — logs events to console
 });
 ```
 
 ### `vibeping.track(event, properties?)`
-
-Track a custom event.
 
 ```typescript
 vibeping.track('button_clicked', { label: 'Buy Now' });
@@ -98,26 +108,16 @@ vibeping.track('signup_completed', { plan: 'pro', source: 'landing' });
 
 ### `vibeping.identify(userId, traits?)`
 
-Associate events with a user. Call after login.
-
 ```typescript
 vibeping.identify('user_123', { email: 'dev@example.com', plan: 'pro' });
 ```
 
 ## Self-Hosting
 
-> **Prefer not to self-host?** Use the hosted version at [app.vibeping.dev](https://app.vibeping.dev) — free tier available.
-
-Run VibePing on your own infrastructure. VibePing requires **Supabase** for authentication and database (the schema uses Supabase Auth features like `auth.users` and Row Level Security).
-
-### Prerequisites
-
-1. **Create a Supabase project** — use [Supabase Cloud](https://supabase.com) (free tier works) or [self-host Supabase](https://supabase.com/docs/guides/self-hosting)
-2. **Run database migrations** — apply the SQL files in `supabase/migrations/` to your Supabase project (via the Supabase dashboard SQL editor or CLI)
-
-### Deploy with Docker
+VibePing is fully self-hostable. You'll need a **Supabase** project (free tier works) for auth + database.
 
 ```bash
+# 1. Clone & configure
 git clone https://github.com/Vibeping/vibeping.git
 cd vibeping
 cp .env.example .env
@@ -131,52 +131,35 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ```
 
-Then start the dashboard:
-
 ```bash
+# 2. Run migrations (apply SQL files in supabase/migrations/ via Supabase CLI or dashboard)
+
+# 3. Start
 docker compose up -d
 ```
 
 Open `http://localhost:3000` and start tracking.
 
+> **Don't want to self-host?** [app.vibeping.dev](https://app.vibeping.dev) is free to start.
+
 ## CDN Options
 
-You can load the VibePing SDK via a `<script>` tag from several CDN sources:
-
-| Option                     | URL                                                               | Notes                                       |
-| -------------------------- | ----------------------------------------------------------------- | ------------------------------------------- |
-| **jsDelivr** (recommended) | `https://cdn.jsdelivr.net/npm/@vibeping/sdk/dist/vibeping.umd.js` | Free, fast, no setup needed                 |
-| **unpkg**                  | `https://unpkg.com/@vibeping/sdk/dist/vibeping.umd.js`            | Free alternative CDN                        |
-| **Self-host**              | Download from npm and serve from your own origin                  | Full control over caching & availability    |
-| **cdn.vibeping.dev**       | `https://cdn.vibeping.dev/v1.js`                                  | 🚧 Coming soon — custom CDN with SRI hashes |
-
-Pin a specific version to avoid unexpected changes:
-
-```html
-<script
-  src="https://cdn.jsdelivr.net/npm/@vibeping/sdk@latest/dist/vibeping.umd.js"
-  data-id="vp_your_api_key"
-></script>
-```
-
-To build CDN-ready files locally, run:
-
-```bash
-./scripts/publish-cdn.sh
-```
+| Source                     | URL                                                                      |
+| -------------------------- | ------------------------------------------------------------------------ |
+| **jsDelivr** (recommended) | `https://cdn.jsdelivr.net/npm/@vibeping/sdk@latest/dist/vibeping.umd.js` |
+| **unpkg**                  | `https://unpkg.com/@vibeping/sdk/dist/vibeping.umd.js`                   |
+| **Self-host**              | Download from npm, serve from your own origin                            |
 
 ## Tech Stack
 
-- **SDK**: TypeScript, <5KB gzipped, zero dependencies
+- **SDK**: TypeScript, 3.3KB gzipped, zero dependencies
 - **Dashboard**: Next.js 14 (App Router), Tailwind CSS
 - **Database**: Supabase (PostgreSQL)
 - **Monorepo**: pnpm workspaces + Turborepo
 
-## Project Structure
-
 ```
 vibeping/
-├── packages/sdk/          # Tracking snippet (<5KB)
+├── packages/sdk/          # Tracking SDK (3.3KB gzipped)
 ├── apps/dashboard/        # Self-hostable dashboard
 ├── supabase/              # Database migrations
 └── docker-compose.yml     # One-command self-host
@@ -197,23 +180,30 @@ vibeping/
 - [ ] Slack / Discord alert integrations
 - [ ] Export to CSV / webhooks
 
-Have an idea? [Open an issue](https://github.com/Vibeping/vibeping/issues) or start a [discussion](https://github.com/Vibeping/vibeping/discussions).
-
-## Community
-
-- 💬 [GitHub Discussions](https://github.com/Vibeping/vibeping/discussions) — Ask questions, share ideas
-- 🐛 [Issues](https://github.com/Vibeping/vibeping/issues) — Report bugs or request features
-- 𝕏 [@VibePingDev](https://x.com/VibePingDev) — Updates and announcements
-- 🌐 [vibeping.dev](https://vibeping.dev) — Product site
+[Open an issue](https://github.com/Vibeping/vibeping/issues) or start a [discussion](https://github.com/Vibeping/vibeping/discussions) if you have ideas.
 
 ## Contributing
 
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions and guidelines.
+We welcome contributions. See **[CONTRIBUTING.md](CONTRIBUTING.md)** for setup instructions and guidelines.
+
+## Community
+
+- 💬 [GitHub Discussions](https://github.com/Vibeping/vibeping/discussions) — Questions & ideas
+- 🐛 [Issues](https://github.com/Vibeping/vibeping/issues) — Bugs & feature requests
+- 𝕏 [@VibePingDev](https://x.com/VibePingDev) — Updates
+- 🌐 [vibeping.dev](https://vibeping.dev) — Product site
+- 📖 [Docs](https://vibeping.dev/docs) — Full documentation
 
 ## License
 
-VibePing is open source under the [AGPL-3.0 License](LICENSE).
+AGPL-3.0 — see [LICENSE](LICENSE).
 
 ---
 
+<div align="center">
+
 **Built with 🏓 for vibe coders everywhere.**
+
+[Get Started](https://app.vibeping.dev) · [Read the Docs](https://vibeping.dev/docs) · [Star on GitHub](https://github.com/Vibeping/vibeping)
+
+</div>
