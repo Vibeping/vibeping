@@ -29,6 +29,7 @@ export async function POST(request: NextRequest) {
     .from('projects')
     .select('id')
     .eq('id', project_id)
+    .eq('user_id', user.id)
     .single();
 
   if (!project) {

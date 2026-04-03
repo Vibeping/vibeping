@@ -27,11 +27,9 @@ jobs:
 
       - name: Type check
         run: pnpm turbo typecheck --filter=./packages/* --filter=./apps/*
-        continue-on-error: true
 
       - name: Test
         run: pnpm turbo test --filter=./packages/* --filter=./apps/*
-        continue-on-error: true
 
       - name: Build
         run: pnpm turbo build

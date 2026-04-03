@@ -25,6 +25,8 @@ Thumbs.db
 
 # Turbo
 .turbo/
+tsconfig.tsbuildinfo
+*.tsbuildinfo
 
 # Debug
 npm-debug.log*

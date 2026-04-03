@@ -82,6 +82,8 @@ export function createTransport(config: ResolvedConfig): Transport {
     flush(true);
   }
 
+  let visibilityHandler: (() => void) | null = null;
+
   // Set up periodic flushing and unload handlers
   function start(): void {
     if (typeof window === 'undefined') return;
@@ -89,11 +91,12 @@ export function createTransport(config: ResolvedConfig): Transport {
     timer = setInterval(() => flush(), FLUSH_INTERVAL_MS);
 
     // Use visibilitychange + pagehide for reliable unload detection
-    document.addEventListener('visibilitychange', () => {
+    visibilityHandler = () => {
       if (document.visibilityState === 'hidden') {
         flush(true);
       }
-    });
+    };
+    document.addEventListener('visibilitychange', visibilityHandler);
     window.addEventListener('pagehide', onUnload);
   }
 
@@ -127,6 +130,10 @@ export function createTransport(config: ResolvedConfig): Transport {
       flush(true);
       if (typeof window !== 'undefined') {
         window.removeEventListener('pagehide', onUnload);
+        if (visibilityHandler) {
+          document.removeEventListener('visibilitychange', visibilityHandler);
+          visibilityHandler = null;
+        }
       }
     },
   };

@@ -7,7 +7,7 @@
 export interface VibePingConfig {
   /** Project ID from VibePing dashboard */
   id: string;
-  /** API endpoint URL (defaults to https://api.vibeping.com) */
+  /** API endpoint URL (required for self-hosted deployments) */
   apiUrl?: string;
   /** Enable debug logging to console */
   debug?: boolean;
@@ -53,7 +53,7 @@ export interface PageviewEvent extends BaseEvent {
 }
 
 /** Error event — captured from window.onerror / unhandledrejection */
-export interface ErrorEvent extends BaseEvent {
+export interface VibePingErrorEvent extends BaseEvent {
   type: EventType.Error;
   message: string;
   stack: string;
@@ -102,7 +102,7 @@ export interface IdentifyEvent extends BaseEvent {
 /** Union of all event types */
 export type VibePingEvent =
   | PageviewEvent
-  | ErrorEvent
+  | VibePingErrorEvent
   | VitalEvent
   | CustomEvent
   | SessionEvent

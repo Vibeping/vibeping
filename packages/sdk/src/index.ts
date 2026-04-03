@@ -15,7 +15,7 @@ export type { VibePingConfig } from './types';
 export { EventType } from './types';
 export type {
   PageviewEvent,
-  ErrorEvent,
+  VibePingErrorEvent,
   VitalEvent,
   CustomEvent,
   SessionEvent,
@@ -24,7 +24,7 @@ export type {
 } from './types';
 
 /** Default API URL */
-const DEFAULT_API_URL = 'https://api.vibeping.com';
+const DEFAULT_API_URL = '';
 
 /** Public API returned by init() */
 export interface VibePingAPI {
@@ -66,6 +66,10 @@ export function init(config: VibePingConfig): VibePingAPI {
 
   if (!config.id) {
     throw new Error('[VibePing] config.id is required');
+  }
+
+  if (!config.apiUrl) {
+    console.warn('[VibePing] No apiUrl configured. Events will not be sent. Set apiUrl in vibeping.init({ apiUrl: ... })');
   }
 
   const resolved = resolveConfig(config);

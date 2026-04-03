@@ -5,7 +5,7 @@
  */
 
 import { EventType } from './types';
-import type { ResolvedConfig, Transport, ErrorEvent } from './types';
+import type { ResolvedConfig, Transport, VibePingErrorEvent } from './types';
 import { getSessionId } from './tracker';
 
 const DEDUP_WINDOW_MS = 5000;
@@ -46,7 +46,7 @@ export function createErrorTracker(
     line: number,
     column: number,
     errorType: string
-  ): ErrorEvent {
+  ): VibePingErrorEvent {
     return {
       type: EventType.Error,
       timestamp: new Date().toISOString(),
