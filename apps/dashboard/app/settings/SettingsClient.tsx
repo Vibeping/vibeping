@@ -124,6 +124,7 @@ export default function SettingsClient({ initialProjects }: SettingsClientProps)
   const [newProjectName, setNewProjectName] = useState('');
   const [newProjectUrl, setNewProjectUrl] = useState('');
   const [creating, setCreating] = useState(false);
+  const [justCreated, setJustCreated] = useState<Project | null>(null);
   const [saving, setSaving] = useState(false);
   const [confirmModal, setConfirmModal] = useState<{
     open: boolean;
@@ -215,6 +216,7 @@ export default function SettingsClient({ initialProjects }: SettingsClientProps)
         addProject(newProject);
         setActiveProjectId(newProject.id);
         setSelectedProject(newProject);
+        setJustCreated(newProject);
         setNewProjectName('');
         setNewProjectUrl('');
       }
@@ -233,8 +235,105 @@ export default function SettingsClient({ initialProjects }: SettingsClientProps)
     ? `npm install @vibeping/sdk\n\n// Then in your app:\nimport vibeping from '@vibeping/sdk';\nvibeping.init({ id: '${activeProject.api_key}' });`
     : '';
 
+  const justCreatedScriptTag = justCreated
+    ? `<script src="https://cdn.jsdelivr.net/npm/@vibeping/sdk@0.1.0/dist/vibeping.umd.js" data-id="${justCreated.api_key}"></script>`
+    : '';
+
+  const justCreatedNpmSnippet = justCreated
+    ? `npm install @vibeping/sdk\n\n// Then in your app:\nimport vibeping from '@vibeping/sdk';\nvibeping.init({ id: '${justCreated.api_key}' });`
+    : '';
+
+  const lovablePrompt = justCreated
+    ? `Add this script tag to the <head> of my HTML to enable VibePing analytics:\n\n<script src="https://cdn.jsdelivr.net/npm/@vibeping/sdk@0.1.0/dist/vibeping.umd.js" data-id="${justCreated.api_key}"></script>`
+    : '';
+
+  if (justCreated) {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl p-8 text-center">
+          {/* Success Icon */}
+          <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-5">
+            <svg
+              className="w-8 h-8 text-emerald-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+
+          <h1 className="text-2xl font-bold text-white font-outfit mb-2">
+            {justCreated.name} is ready!
+          </h1>
+          <p className="text-slate-400 mb-8">
+            Add the SDK to your app to start tracking. Pick whichever method works for you.
+          </p>
+
+          <div className="space-y-6 text-left">
+            {/* Prompt for Lovable / Bolt / v0 etc. */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-medium text-white flex items-center gap-2">
+                  <span className="text-lg">✨</span>
+                  Prompt for Lovable / Bolt / v0
+                </h3>
+                <CopyButton text={lovablePrompt} label="Copy prompt" />
+              </div>
+              <p className="text-xs text-slate-500 mb-2">
+                Paste this into your AI coding tool and it will set everything up for you.
+              </p>
+              <pre className="px-4 py-3 text-sm bg-black/30 border border-white/10 rounded-lg text-cyan-400 font-mono whitespace-pre-wrap break-words">
+                {lovablePrompt}
+              </pre>
+            </div>
+
+            {/* Script Tag */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-medium text-slate-300">Script Tag (easiest)</h3>
+                <CopyButton text={justCreatedScriptTag} label="Copy snippet" />
+              </div>
+              <p className="text-xs text-slate-500 mb-2">
+                Add this to the {'<head>'} of your HTML. That&apos;s it — analytics starts
+                automatically.
+              </p>
+              <pre className="px-4 py-3 text-sm bg-black/30 border border-white/10 rounded-lg text-emerald-400 font-mono whitespace-pre-wrap break-all">
+                {justCreatedScriptTag}
+              </pre>
+            </div>
+
+            {/* NPM */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-medium text-slate-300">NPM Package</h3>
+                <CopyButton text={justCreatedNpmSnippet} label="Copy snippet" />
+              </div>
+              <p className="text-xs text-slate-500 mb-2">
+                For React, Next.js, or any Node.js project.
+              </p>
+              <pre className="px-4 py-3 text-sm bg-black/30 border border-white/10 rounded-lg text-emerald-400 font-mono whitespace-pre-wrap break-words">
+                {justCreatedNpmSnippet}
+              </pre>
+            </div>
+          </div>
+
+          <div className="mt-8 flex gap-3 justify-center">
+            <button
+              onClick={() => setJustCreated(null)}
+              className="px-5 py-2.5 text-sm font-medium rounded-lg bg-gradient-to-r from-cyan-500 to-cyan-400 text-black hover:from-cyan-400 hover:to-cyan-300 transition-all"
+            >
+              Go to Settings
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div>
+    <div className="min-w-0">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-white font-outfit">Settings</h1>
         <p className="text-slate-400 mt-1">Manage your projects, API keys, and SDK installation.</p>
@@ -444,7 +543,7 @@ export default function SettingsClient({ initialProjects }: SettingsClientProps)
           </div>
 
           {/* ====== SDK INSTALLATION ====== */}
-          <div className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl p-6">
+          <div className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl p-6 min-w-0 overflow-hidden">
             <h2 className="text-lg font-semibold text-white font-outfit mb-5 flex items-center gap-2">
               <svg
                 className="w-5 h-5 text-cyan-400"
@@ -472,8 +571,8 @@ export default function SettingsClient({ initialProjects }: SettingsClientProps)
                 Add this to the {'<head>'} of your HTML. That&apos;s it — analytics starts
                 automatically.
               </p>
-              <div className="relative">
-                <pre className="px-4 py-3 text-sm bg-black/30 border border-white/10 rounded-lg text-emerald-400 font-mono overflow-x-auto">
+              <div className="relative min-w-0">
+                <pre className="px-4 py-3 text-sm bg-black/30 border border-white/10 rounded-lg text-emerald-400 font-mono overflow-x-auto whitespace-pre-wrap break-all">
                   {scriptTag}
                 </pre>
               </div>
