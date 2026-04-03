@@ -1,60 +1,170 @@
-const mockErrors = [
-  { id: 1, message: 'TypeError: Cannot read property "map" of undefined', count: 142, lastSeen: '2 min ago', status: 'unresolved' },
-  { id: 2, message: 'ReferenceError: process is not defined', count: 87, lastSeen: '15 min ago', status: 'unresolved' },
-  { id: 3, message: 'ChunkLoadError: Loading chunk 5 failed', count: 34, lastSeen: '1 hr ago', status: 'investigating' },
-  { id: 4, message: 'NetworkError: Failed to fetch /api/user', count: 12, lastSeen: '3 hr ago', status: 'resolved' },
-];
+import { createAuthClient } from '../../lib/auth';
+import StatCard from '../../components/StatCard';
+import ErrorList from './ErrorList';
 
-function StatusBadge({ status }: { status: string }) {
-  const colors: Record<string, string> = {
-    unresolved: 'bg-red-100 text-red-700',
-    investigating: 'bg-amber-100 text-amber-700',
-    resolved: 'bg-green-100 text-green-700',
-  };
-  return (
-    <span className={`px-2 py-1 rounded-full text-xs font-medium ${colors[status] || 'bg-slate-100 text-slate-700'}`}>
-      {status}
-    </span>
-  );
+interface ErrorEvent {
+  id: string;
+  name: string;
+  url: string;
+  payload: Record<string, unknown> | null;
+  properties: Record<string, unknown> | null;
+  session_id: string;
+  created_at: string;
+  project_id: string;
+  type: string;
 }
 
-export default function ErrorsPage() {
+interface GroupedError {
+  message: string;
+  url: string;
+  count: number;
+  lastSeen: string;
+  occurrences: ErrorEvent[];
+}
+
+export default async function ErrorsPage() {
+  const supabase = createAuthClient();
+
+  const { data: projects } = await supabase
+    .from('projects')
+    .select('id, name')
+    .order('created_at', { ascending: true })
+    .limit(1);
+
+  const project = projects?.[0];
+
+  if (!project) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 px-4">
+        <div className="text-6xl mb-6">🎉</div>
+        <h2 className="text-2xl font-bold text-white mb-2 font-outfit">
+          No errors detected!
+        </h2>
+        <p className="text-slate-400 text-center max-w-md">
+          Your app is running clean.
+        </p>
+      </div>
+    );
+  }
+
+  // Fetch all error events
+  const { data: errors } = await supabase
+    .from('events')
+    .select('*')
+    .eq('project_id', project.id)
+    .eq('type', 'error')
+    .order('created_at', { ascending: false })
+    .limit(500);
+
+  const errorEvents: ErrorEvent[] = (errors || []) as ErrorEvent[];
+
+  // Errors today
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const errorsToday = errorEvents.filter(
+    (e) => new Date(e.created_at) >= todayStart
+  ).length;
+
+  // Group by message
+  const grouped: Record<string, GroupedError> = {};
+  errorEvents.forEach((e) => {
+    const payload = e.payload as Record<string, unknown> | null;
+    const props = e.properties as Record<string, unknown> | null;
+    const message =
+      (payload?.message as string) ||
+      (props?.message as string) ||
+      e.name ||
+      'Unknown error';
+    const url = e.url || (payload?.url as string) || '';
+
+    if (!grouped[message]) {
+      grouped[message] = {
+        message,
+        url,
+        count: 0,
+        lastSeen: e.created_at,
+        occurrences: [],
+      };
+    }
+    grouped[message].count++;
+    if (new Date(e.created_at) > new Date(grouped[message].lastSeen)) {
+      grouped[message].lastSeen = e.created_at;
+    }
+    grouped[message].occurrences.push(e);
+  });
+
+  const groupedErrors = Object.values(grouped);
+  const uniqueErrors = groupedErrors.length;
+  const mostFrequent =
+    groupedErrors.length > 0
+      ? groupedErrors.sort((a, b) => b.count - a.count)[0].message
+      : 'None';
+
+  if (errorEvents.length === 0) {
+    return (
+      <div>
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-white font-outfit">Error Tracking</h1>
+          <p className="text-slate-400 mt-1">Monitor and debug application errors</p>
+        </div>
+        <div className="flex flex-col items-center justify-center py-20 px-4">
+          <div className="text-6xl mb-6">🎉</div>
+          <h2 className="text-2xl font-bold text-white mb-2 font-outfit">
+            No errors detected!
+          </h2>
+          <p className="text-slate-400 text-center max-w-md">
+            Your app is running clean.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Error Tracking</h1>
-          <p className="text-slate-500 mt-1">Uncaught exceptions and unhandled rejections</p>
-        </div>
-        <button className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors text-sm font-medium">
-          Resolve All
-        </button>
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-white font-outfit">Error Tracking</h1>
+        <p className="text-slate-400 mt-1">Monitor and debug application errors</p>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-slate-50 border-b border-slate-200">
-            <tr>
-              <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Error</th>
-              <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Count</th>
-              <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Last Seen</th>
-              <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-200">
-            {mockErrors.map((error) => (
-              <tr key={error.id} className="hover:bg-slate-50 transition-colors">
-                <td className="px-6 py-4">
-                  <p className="text-sm font-mono text-slate-900 truncate max-w-md">{error.message}</p>
-                </td>
-                <td className="px-6 py-4 text-sm text-slate-600">{error.count}</td>
-                <td className="px-6 py-4 text-sm text-slate-500">{error.lastSeen}</td>
-                <td className="px-6 py-4"><StatusBadge status={error.status} /></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <StatCard
+          icon={
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+            </svg>
+          }
+          label="Errors Today"
+          value={errorsToday}
+          alert={errorsToday > 0}
+        />
+        <StatCard
+          icon={
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6z" />
+            </svg>
+          }
+          label="Unique Errors"
+          value={uniqueErrors}
+        />
+        <StatCard
+          icon={
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+            </svg>
+          }
+          label="Most Frequent"
+          value={mostFrequent.length > 30 ? mostFrequent.slice(0, 30) + '…' : mostFrequent}
+        />
       </div>
+
+      {/* Error List (client component for interactivity) */}
+      <ErrorList errors={groupedErrors} />
     </div>
   );
 }
