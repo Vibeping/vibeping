@@ -9,13 +9,14 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          50: '#f0f7ff',
-          100: '#e0effe',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          900: '#1e3a5f',
+          bg: '#0A0F1C',
+          teal: '#06B6D4',
+          coral: '#F97316',
         },
+      },
+      fontFamily: {
+        outfit: ['var(--font-outfit)', 'sans-serif'],
+        'dm-sans': ['var(--font-dm-sans)', 'sans-serif'],
       },
     },
   },

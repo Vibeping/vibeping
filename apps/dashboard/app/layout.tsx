@@ -1,51 +1,50 @@
 import type { Metadata } from 'next';
+import { Outfit, DM_Sans } from 'next/font/google';
 import './globals.css';
+import Sidebar from '../components/Sidebar';
+import TopBar from '../components/TopBar';
+import { getUser } from '../lib/auth';
+
+const outfit = Outfit({
+  subsets: ['latin'],
+  variable: '--font-outfit',
+  display: 'swap',
+});
+
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  variable: '--font-dm-sans',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'VibePing — AI Growth Co-Pilot',
   description: 'Analytics, error tracking, uptime monitoring, and AI insights for vibe-coded apps.',
 };
 
-function Sidebar() {
-  const navItems = [
-    { href: '/', label: 'Overview', icon: '📊' },
-    { href: '/errors', label: 'Errors', icon: '🐛' },
-    { href: '/uptime', label: 'Uptime', icon: '🟢' },
-    { href: '/events', label: 'Events', icon: '⚡' },
-  ];
-
-  return (
-    <aside className="w-64 bg-slate-900 text-white min-h-screen p-6">
-      <div className="mb-8">
-        <h1 className="text-xl font-bold">🏓 VibePing</h1>
-        <p className="text-slate-400 text-sm mt-1">AI Growth Co-Pilot</p>
-      </div>
-      <nav className="space-y-1">
-        {navItems.map((item) => (
-          <a
-            key={item.href}
-            href={item.href}
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
-          >
-            <span>{item.icon}</span>
-            <span>{item.label}</span>
-          </a>
-        ))}
-      </nav>
-    </aside>
-  );
-}
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const user = await getUser();
+  const isAuthPage = false; // Layout always renders; login page has its own full layout
+
   return (
-    <html lang="en">
-      <body className="flex min-h-screen">
-        <Sidebar />
-        <main className="flex-1 p-8">{children}</main>
+    <html lang="en" className={`${outfit.variable} ${dmSans.variable}`}>
+      <body className="font-dm-sans bg-[#0A0F1C] text-slate-200 min-h-screen">
+        {user ? (
+          <div className="flex min-h-screen">
+            <Sidebar />
+            <div className="flex-1 flex flex-col lg:ml-0">
+              <TopBar />
+              <main className="flex-1 p-6 lg:p-8 overflow-auto">{children}</main>
+            </div>
+          </div>
+        ) : (
+          // Auth pages render without sidebar/topbar
+          <>{children}</>
+        )}
       </body>
     </html>
   );
