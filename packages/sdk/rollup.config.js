@@ -12,13 +12,28 @@ export default {
     {
       file: 'dist/vibeping.umd.js',
       format: 'umd',
-      name: 'VibePing',
+      name: 'vibeping',
       sourcemap: true,
+      globals: {
+        'web-vitals': 'webVitals',
+      },
     },
   ],
   plugins: [
-    typescript({ tsconfig: './tsconfig.json', declaration: false }),
-    terser(),
+    typescript({
+      tsconfig: './tsconfig.json',
+      declaration: false,
+      sourceMap: true,
+    }),
+    terser({
+      compress: {
+        passes: 2,
+        pure_getters: true,
+      },
+      format: {
+        comments: false,
+      },
+    }),
   ],
   external: ['web-vitals'],
 };

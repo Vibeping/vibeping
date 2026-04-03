@@ -1,67 +1,131 @@
-/** Configuration options for VibePing SDK */
+/**
+ * VibePing SDK — Type definitions
+ * All event types, config, and transport payload types.
+ */
+
+/** SDK configuration passed to vibeping.init() */
 export interface VibePingConfig {
-  /** Your VibePing project API key */
-  apiKey: string;
-  /** Endpoint URL for event ingestion */
-  endpoint?: string;
-  /** Enable automatic pageview tracking (default: true) */
-  trackPageviews?: boolean;
-  /** Enable error tracking (default: true) */
-  trackErrors?: boolean;
-  /** Enable web vitals collection (default: true) */
-  trackVitals?: boolean;
-  /** Batch flush interval in ms (default: 5000) */
-  flushInterval?: number;
-  /** Max events per batch (default: 25) */
-  batchSize?: number;
-  /** Enable debug logging (default: false) */
+  /** Project ID from VibePing dashboard */
+  id: string;
+  /** API endpoint URL (defaults to https://api.vibeping.com) */
+  apiUrl?: string;
+  /** Enable debug logging to console */
   debug?: boolean;
 }
 
 /** Internal resolved config with defaults applied */
-export interface ResolvedConfig extends Required<VibePingConfig> {}
+export interface ResolvedConfig {
+  id: string;
+  apiUrl: string;
+  debug: boolean;
+}
 
-/** Base event payload sent to the server */
-export interface VibePingEvent {
+/** Event type discriminator */
+export const enum EventType {
+  Pageview = 'pageview',
+  Error = 'error',
+  Vital = 'vital',
+  Custom = 'custom',
+  Session = 'session',
+  Identify = 'identify',
+}
+
+/** Base fields shared by all events */
+export interface BaseEvent {
+  /** Event type discriminator */
   type: EventType;
-  timestamp: number;
+  /** ISO 8601 timestamp */
+  timestamp: string;
+  /** Session ID */
   sessionId: string;
+  /** Current page URL */
   url: string;
-  properties: Record<string, unknown>;
 }
 
-/** Supported event types */
-export type EventType =
-  | 'pageview'
-  | 'error'
-  | 'vital'
-  | 'custom'
-  | 'session_start'
-  | 'session_end';
+/** Pageview event — fired on navigation */
+export interface PageviewEvent extends BaseEvent {
+  type: EventType.Pageview;
+  referrer: string;
+  title: string;
+  screenWidth: number;
+  screenHeight: number;
+  language: string;
+}
 
-/** Error event payload */
-export interface ErrorEvent {
+/** Error event — captured from window.onerror / unhandledrejection */
+export interface ErrorEvent extends BaseEvent {
+  type: EventType.Error;
   message: string;
-  stack?: string;
-  source?: string;
-  lineno?: number;
-  colno?: number;
-  type: 'uncaught' | 'unhandled_rejection' | 'manual';
+  stack: string;
+  file: string;
+  line: number;
+  column: number;
+  errorType: string;
 }
 
-/** Web vital metric */
-export interface VitalMetric {
-  name: 'LCP' | 'FID' | 'CLS' | 'FCP' | 'TTFB' | 'INP';
-  value: number;
-  rating: 'good' | 'needs-improvement' | 'poor';
-  delta: number;
-}
-
-/** Custom event */
-export interface CustomEvent {
+/** Web vital metric event */
+export interface VitalEvent extends BaseEvent {
+  type: EventType.Vital;
+  /** Metric name: LCP, FID, CLS, TTFB, INP */
   name: string;
-  properties?: Record<string, unknown>;
+  /** Metric value */
+  value: number;
+  /** Rating: good, needs-improvement, poor */
+  rating: string;
 }
 
-/** Transport send function signature */
-export type TransportSendFn = (events: VibePingEvent[]) => Promise<boolean>;
+/** Custom user-defined event */
+export interface CustomEvent extends BaseEvent {
+  type: EventType.Custom;
+  /** Event name */
+  name: string;
+  /** Optional properties */
+  properties: Record<string, string | number | boolean>;
+}
+
+/** Session lifecycle event */
+export interface SessionEvent extends BaseEvent {
+  type: EventType.Session;
+  /** Session action: start or end */
+  action: 'start' | 'end';
+  /** Duration in milliseconds (set on end) */
+  duration: number;
+}
+
+/** Identify event — associate user data with a session */
+export interface IdentifyEvent extends BaseEvent {
+  type: EventType.Identify;
+  /** User properties */
+  traits: Record<string, string | number | boolean>;
+}
+
+/** Union of all event types */
+export type VibePingEvent =
+  | PageviewEvent
+  | ErrorEvent
+  | VitalEvent
+  | CustomEvent
+  | SessionEvent
+  | IdentifyEvent;
+
+/** Batch payload sent to the API */
+export interface TransportPayload {
+  /** Project ID */
+  projectId: string;
+  /** Batch of events */
+  events: VibePingEvent[];
+  /** SDK version */
+  sdkVersion: string;
+  /** Sent timestamp */
+  sentAt: string;
+}
+
+/** Transport interface for sending events */
+export interface Transport {
+  /** Queue an event for sending */
+  send(event: VibePingEvent): void;
+  /** Flush all queued events immediately */
+  flush(): void;
+  /** Stop the transport (clear timers) */
+  destroy(): void;
+}

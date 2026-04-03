@@ -1,92 +1,133 @@
-import type { VibePingEvent, ResolvedConfig } from './types.js';
-
 /**
- * Event transport — batches events and sends via Beacon API (preferred) or fetch.
+ * VibePing SDK — Transport layer
+ * Batches events in memory and flushes to the API endpoint.
+ * Uses navigator.sendBeacon on page unload, fetch otherwise.
+ * Retries once on failure.
  */
-export class Transport {
-  private queue: VibePingEvent[] = [];
-  private timer: ReturnType<typeof setInterval> | null = null;
-  private config: ResolvedConfig;
 
-  constructor(config: ResolvedConfig) {
-    this.config = config;
+import type { ResolvedConfig, Transport, TransportPayload, VibePingEvent } from './types';
+
+const SDK_VERSION = '0.1.0';
+const FLUSH_INTERVAL_MS = 5000;
+const MAX_BUFFER_SIZE = 10;
+
+/** Create a transport that batches and sends events to the API */
+export function createTransport(config: ResolvedConfig): Transport {
+  let buffer: VibePingEvent[] = [];
+  let timer: ReturnType<typeof setInterval> | null = null;
+  let destroyed = false;
+
+  const endpoint = `${config.apiUrl}/api/v1/event`;
+
+  /** Build the payload from the current buffer */
+  function buildPayload(events: VibePingEvent[]): TransportPayload {
+    return {
+      projectId: config.id,
+      events,
+      sdkVersion: SDK_VERSION,
+      sentAt: new Date().toISOString(),
+    };
   }
 
-  /** Start the flush interval timer */
-  start(): void {
-    if (this.timer) return;
-    this.timer = setInterval(() => this.flush(), this.config.flushInterval);
+  /** Send payload via fetch with one retry on failure */
+  async function sendViaFetch(payload: TransportPayload): Promise<void> {
+    const body = JSON.stringify(payload);
+    const headers = { 'Content-Type': 'application/json' };
 
-    // Flush on page unload
-    if (typeof window !== 'undefined') {
-      window.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'hidden') {
-          this.flush();
+    try {
+      const res = await fetch(endpoint, { method: 'POST', headers, body, keepalive: true });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    } catch (err) {
+      // Retry once
+      if (config.debug) {
+        console.warn('[VibePing] Send failed, retrying...', err);
+      }
+      try {
+        await fetch(endpoint, { method: 'POST', headers, body, keepalive: true });
+      } catch (retryErr) {
+        if (config.debug) {
+          console.error('[VibePing] Retry failed, events dropped', retryErr);
         }
-      });
-      window.addEventListener('pagehide', () => this.flush());
+      }
     }
   }
 
-  /** Stop the flush timer */
-  stop(): void {
-    if (this.timer) {
-      clearInterval(this.timer);
-      this.timer = null;
-    }
-    // Final flush
-    this.flush();
-  }
-
-  /** Add an event to the batch queue */
-  enqueue(event: VibePingEvent): void {
-    this.queue.push(event);
-
-    if (this.queue.length >= this.config.batchSize) {
-      this.flush();
+  /** Send payload via sendBeacon (used on page unload) */
+  function sendViaBeacon(payload: TransportPayload): void {
+    const body = JSON.stringify(payload);
+    const blob = new Blob([body], { type: 'application/json' });
+    const sent = navigator.sendBeacon(endpoint, blob);
+    if (!sent && config.debug) {
+      console.warn('[VibePing] sendBeacon failed');
     }
   }
 
-  /** Flush all queued events to the server */
-  flush(): void {
-    if (this.queue.length === 0) return;
+  /** Flush buffered events */
+  function flush(useBeacon = false): void {
+    if (buffer.length === 0) return;
 
-    const batch = this.queue.splice(0, this.config.batchSize);
-    const payload = JSON.stringify({
-      apiKey: this.config.apiKey,
-      events: batch,
+    const events = buffer;
+    buffer = [];
+    const payload = buildPayload(events);
+
+    if (useBeacon && typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
+      sendViaBeacon(payload);
+    } else {
+      void sendViaFetch(payload);
+    }
+  }
+
+  /** Handle page visibility change / unload — flush with beacon */
+  function onUnload(): void {
+    flush(true);
+  }
+
+  // Set up periodic flushing and unload handlers
+  function start(): void {
+    if (typeof window === 'undefined') return;
+
+    timer = setInterval(() => flush(), FLUSH_INTERVAL_MS);
+
+    // Use visibilitychange + pagehide for reliable unload detection
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        flush(true);
+      }
     });
-
-    if (this.config.debug) {
-      console.log('[VibePing] Flushing', batch.length, 'events');
-    }
-
-    this.send(payload);
+    window.addEventListener('pagehide', onUnload);
   }
 
-  /** Send payload using Beacon API (preferred) or fetch fallback */
-  private send(payload: string): void {
-    const url = this.config.endpoint;
+  start();
 
-    // Prefer sendBeacon for reliability during page unload
-    if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
-      const blob = new Blob([payload], { type: 'application/json' });
-      const sent = navigator.sendBeacon(url, blob);
-      if (sent) return;
-    }
+  return {
+    send(event: VibePingEvent): void {
+      if (destroyed) return;
+      buffer.push(event);
 
-    // Fallback to fetch with keepalive
-    if (typeof fetch !== 'undefined') {
-      fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: payload,
-        keepalive: true,
-      }).catch((err) => {
-        if (this.config.debug) {
-          console.error('[VibePing] Transport error:', err);
-        }
-      });
-    }
-  }
+      if (config.debug) {
+        console.debug('[VibePing] Event queued:', event.type, event);
+      }
+
+      // Flush if buffer is full
+      if (buffer.length >= MAX_BUFFER_SIZE) {
+        flush();
+      }
+    },
+
+    flush(): void {
+      flush();
+    },
+
+    destroy(): void {
+      destroyed = true;
+      if (timer !== null) {
+        clearInterval(timer);
+        timer = null;
+      }
+      flush(true);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('pagehide', onUnload);
+      }
+    },
+  };
 }

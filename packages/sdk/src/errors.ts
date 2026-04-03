@@ -1,106 +1,139 @@
-import type { VibePingEvent, ResolvedConfig, ErrorEvent } from './types.js';
-import type { Transport } from './transport.js';
-
 /**
- * Error tracking — captures uncaught exceptions and unhandled promise rejections.
+ * VibePing SDK — Error auto-capture
+ * Hooks into window.onerror and unhandledrejection.
+ * Deduplicates errors with the same message+file within 5 seconds.
  */
-export class ErrorTracker {
-  private config: ResolvedConfig;
-  private transport: Transport;
-  private sessionId: string;
-  private cleanupFns: Array<() => void> = [];
 
-  constructor(config: ResolvedConfig, transport: Transport, sessionId: string) {
-    this.config = config;
-    this.transport = transport;
-    this.sessionId = sessionId;
+import { EventType } from './types';
+import type { ResolvedConfig, Transport, ErrorEvent } from './types';
+import { getSessionId } from './tracker';
+
+const DEDUP_WINDOW_MS = 5000;
+
+export interface ErrorTracker {
+  start(): void;
+  stop(): void;
+}
+
+/** Create an error tracker that captures uncaught errors and promise rejections */
+export function createErrorTracker(
+  config: ResolvedConfig,
+  transport: Transport
+): ErrorTracker {
+  /** Map of "message|file" -> last seen timestamp for dedup */
+  const seen = new Map<string, number>();
+  const cleanupFns: Array<() => void> = [];
+
+  /** Check if this error was recently seen (dedup) */
+  function isDuplicate(message: string, file: string): boolean {
+    const key = `${message}|${file}`;
+    const now = Date.now();
+    const lastSeen = seen.get(key);
+
+    if (lastSeen && now - lastSeen < DEDUP_WINDOW_MS) {
+      return true;
+    }
+
+    seen.set(key, now);
+    return false;
   }
 
-  /** Start capturing errors */
-  start(): void {
+  /** Build an error event */
+  function buildErrorEvent(
+    message: string,
+    stack: string,
+    file: string,
+    line: number,
+    column: number,
+    errorType: string
+  ): ErrorEvent {
+    return {
+      type: EventType.Error,
+      timestamp: new Date().toISOString(),
+      sessionId: getSessionId(),
+      url: location.href,
+      message,
+      stack,
+      file,
+      line,
+      column,
+      errorType,
+    };
+  }
+
+  function start(): void {
     if (typeof window === 'undefined') return;
 
-    // Capture uncaught errors via window.onerror
-    const onError = (
-      message: string | Event,
+    // Hook into window.onerror for uncaught errors
+    const prevOnError = window.onerror;
+    window.onerror = function (
+      msg: string | Event,
       source?: string,
       lineno?: number,
       colno?: number,
       error?: Error
-    ): void => {
-      const errorPayload: ErrorEvent = {
-        message: error?.message || String(message),
-        stack: error?.stack,
-        source,
-        lineno,
-        colno,
-        type: 'uncaught',
-      };
+    ): boolean | void {
+      const message = typeof msg === 'string' ? msg : 'Unknown error';
+      const file = source ?? '';
+      const line = lineno ?? 0;
+      const column = colno ?? 0;
+      const stack = error?.stack ?? '';
+      const errorType = error?.name ?? 'Error';
 
-      this.sendError(errorPayload);
+      if (!isDuplicate(message, file)) {
+        transport.send(buildErrorEvent(message, stack, file, line, column, errorType));
+        if (config.debug) {
+          console.debug('[VibePing] Error captured:', message);
+        }
+      }
+
+      // Call previous handler if it exists
+      if (typeof prevOnError === 'function') {
+        return prevOnError.call(window, msg, source, lineno, colno, error);
+      }
     };
-
-    // Capture unhandled promise rejections
-    const onUnhandledRejection = (event: PromiseRejectionEvent): void => {
-      const reason = event.reason;
-      const errorPayload: ErrorEvent = {
-        message: reason?.message || String(reason),
-        stack: reason?.stack,
-        type: 'unhandled_rejection',
-      };
-
-      this.sendError(errorPayload);
-    };
-
-    window.onerror = onError;
-    window.addEventListener('unhandledrejection', onUnhandledRejection);
-
-    this.cleanupFns.push(() => {
-      window.onerror = null;
-      window.removeEventListener('unhandledrejection', onUnhandledRejection);
+    cleanupFns.push(() => {
+      window.onerror = prevOnError;
     });
 
-    if (this.config.debug) {
-      console.log('[VibePing] Error tracking enabled');
+    // Hook into unhandledrejection for promise rejections
+    const onUnhandledRejection = (event: PromiseRejectionEvent): void => {
+      const reason = event.reason;
+      let message = 'Unhandled Promise Rejection';
+      let stack = '';
+      let errorType = 'UnhandledRejection';
+
+      if (reason instanceof Error) {
+        message = reason.message;
+        stack = reason.stack ?? '';
+        errorType = reason.name;
+      } else if (typeof reason === 'string') {
+        message = reason;
+      }
+
+      if (!isDuplicate(message, '')) {
+        transport.send(buildErrorEvent(message, stack, '', 0, 0, errorType));
+        if (config.debug) {
+          console.debug('[VibePing] Unhandled rejection captured:', message);
+        }
+      }
+    };
+
+    window.addEventListener('unhandledrejection', onUnhandledRejection);
+    cleanupFns.push(() =>
+      window.removeEventListener('unhandledrejection', onUnhandledRejection)
+    );
+
+    if (config.debug) {
+      console.debug('[VibePing] Error tracking started');
     }
   }
 
-  /** Stop capturing errors */
-  stop(): void {
-    this.cleanupFns.forEach((fn) => fn());
-    this.cleanupFns = [];
+  function stop(): void {
+    for (const fn of cleanupFns) fn();
+    cleanupFns.length = 0;
+    seen.clear();
   }
 
-  /** Manually capture an error */
-  captureError(error: Error | string, extra?: Record<string, unknown>): void {
-    const err = typeof error === 'string' ? new Error(error) : error;
-    const errorPayload: ErrorEvent = {
-      message: err.message,
-      stack: err.stack,
-      type: 'manual',
-    };
-
-    this.sendError(errorPayload, extra);
-  }
-
-  /** Send an error event */
-  private sendError(error: ErrorEvent, extra?: Record<string, unknown>): void {
-    const event: VibePingEvent = {
-      type: 'error',
-      timestamp: Date.now(),
-      sessionId: this.sessionId,
-      url: typeof window !== 'undefined' ? window.location.href : '',
-      properties: {
-        ...error,
-        ...extra,
-        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
-      },
-    };
-
-    this.transport.enqueue(event);
-
-    if (this.config.debug) {
-      console.log('[VibePing] Error captured:', error.message);
-    }
-  }
+  return { start, stop };
 }
