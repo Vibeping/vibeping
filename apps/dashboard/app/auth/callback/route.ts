@@ -6,10 +6,20 @@ import type { CookieOptions } from '@supabase/ssr';
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
+  const token_hash = searchParams.get('token_hash');
+  const type = searchParams.get('type') as 'magiclink' | 'signup' | 'recovery' | 'email' | null;
   const next = searchParams.get('next') ?? '/';
 
-  if (!code) {
-    // No code provided — redirect to login with error
+  // Debug: log what params we're receiving
+  console.log('[auth/callback] params:', {
+    code: code ? `${code.substring(0, 10)}...` : null,
+    token_hash: token_hash ? `${token_hash.substring(0, 10)}...` : null,
+    type,
+    allParams: Object.fromEntries(searchParams.entries()),
+  });
+
+  if (!code && !token_hash) {
+    console.error('[auth/callback] No code or token_hash — redirecting to login');
     return NextResponse.redirect(new URL('/login?error=auth', origin));
   }
 
@@ -33,7 +43,20 @@ export async function GET(request: NextRequest) {
     }
   );
 
-  const { error } = await supabase.auth.exchangeCodeForSession(code);
+  let error: Error | null = null;
+
+  if (token_hash && type) {
+    // Magic link / email OTP flow — verify directly with token hash
+    const { error: verifyError } = await supabase.auth.verifyOtp({
+      token_hash,
+      type,
+    });
+    error = verifyError;
+  } else if (code) {
+    // PKCE OAuth / code exchange flow
+    const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+    error = exchangeError;
+  }
 
   if (error) {
     console.error('Auth callback error:', error.message);

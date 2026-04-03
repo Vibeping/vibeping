@@ -1,4 +1,5 @@
 import { createClient as _createClient } from '@supabase/supabase-js';
+import { createBrowserClient as _createBrowserClient } from '@supabase/ssr';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -16,16 +17,14 @@ export function createServerClient() {
 }
 
 /**
- * Browser-side Supabase client with anon key.
- * Uses the public anon key — safe to expose in client bundles.
- * RLS policies protect data access.
- * PKCE flow ensures OAuth redirects use ?code= (server-exchangeable)
- * instead of #access_token= (implicit, client-only).
+ * Browser-side Supabase client using @supabase/ssr.
+ * Stores auth state (including PKCE code verifier) in cookies so the
+ * server-side callback route can read them during code exchange.
+ * This is critical for OAuth flows — using raw @supabase/supabase-js
+ * stores in localStorage which the server can't access.
  */
 export function createBrowserClient() {
-  return _createClient(supabaseUrl, supabaseAnonKey, {
-    auth: { flowType: 'pkce' },
-  });
+  return _createBrowserClient(supabaseUrl, supabaseAnonKey);
 }
 
 /**
