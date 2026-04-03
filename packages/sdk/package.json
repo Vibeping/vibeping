@@ -1,0 +1,46 @@
+{
+  "name": "@vibeping/sdk",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Lightweight analytics, error tracking, and web vitals SDK for VibePing",
+  "main": "dist/vibeping.umd.js",
+  "module": "dist/vibeping.esm.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/vibeping.esm.js",
+      "require": "./dist/vibeping.umd.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "rollup -c && tsc --emitDeclarationOnly --declaration --outDir dist",
+    "dev": "rollup -c --watch",
+    "lint": "tsc --noEmit",
+    "test": "echo \"Tests pending\" && exit 0",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "@rollup/plugin-typescript": "^11.1.0",
+    "rollup": "^4.14.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "tslib": "^2.6.0",
+    "typescript": "^5.4.0"
+  },
+  "peerDependencies": {
+    "web-vitals": "^3.0.0 || ^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "web-vitals": {
+      "optional": true
+    }
+  },
+  "sideEffects": false,
+  "license": "AGPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vibeping/vibeping-oss.git",
+    "directory": "packages/sdk"
+  }
+}
