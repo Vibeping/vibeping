@@ -1,6 +1,6 @@
 {
   "framework": "nextjs",
-  "buildCommand": "cd ../.. && pnpm turbo run build --filter=dashboard",
+  "buildCommand": "cd ../.. && pnpm turbo run build --filter=@vibeping/dashboard...",
   "installCommand": "cd ../.. && pnpm install",
   "crons": [
     {
