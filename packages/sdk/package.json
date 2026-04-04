@@ -28,13 +28,13 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "dist/vibeping.umd.js",
+  "main": "dist/vibeping.cjs",
   "module": "dist/vibeping.esm.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/vibeping.esm.js",
-      "require": "./dist/vibeping.umd.js",
+      "require": "./dist/vibeping.cjs",
       "types": "./dist/index.d.ts"
     }
   },

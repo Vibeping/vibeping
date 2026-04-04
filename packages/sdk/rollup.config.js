@@ -18,6 +18,12 @@ export default {
         'web-vitals': 'webVitals',
       },
     },
+    {
+      file: 'dist/vibeping.cjs',
+      format: 'cjs',
+      sourcemap: true,
+      exports: 'named',
+    },
   ],
   plugins: [
     typescript({
