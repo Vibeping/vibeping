@@ -12,6 +12,7 @@ Analytics · Error Tracking · Uptime Monitoring — one script tag, zero cookie
 [![GitHub stars](https://img.shields.io/github/stars/Vibeping/vibeping)](https://github.com/Vibeping/vibeping/stargazers)
 [![CI](https://github.com/Vibeping/vibeping/actions/workflows/ci.yml/badge.svg)](https://github.com/Vibeping/vibeping/actions/workflows/ci.yml)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Built with Supabase](https://supabase.com/badge-made-with-supabase-dark.svg)](https://supabase.com)
 
 [Docs](https://vibeping.dev/docs) · [Dashboard](https://app.vibeping.dev) · [Website](https://vibeping.dev)
 
