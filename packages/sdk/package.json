@@ -1,6 +1,6 @@
 {
   "name": "@vibeping/sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Lightweight analytics, error tracking, and web vitals SDK for VibePing",
   "author": "VibePing <hello@vibeping.dev>",
