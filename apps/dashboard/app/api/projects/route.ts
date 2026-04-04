@@ -79,6 +79,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to create project' }, { status: 500 });
     }
 
+    // Auto-create uptime check if project has a valid URL
+    if (project && project.url) {
+      try {
+        new URL(project.url); // validate URL format
+        await supabase.from('uptime_checks').insert({
+          url: project.url,
+          project_id: project.id,
+          interval_seconds: 300,
+          enabled: true,
+        });
+      } catch {
+        // URL invalid or insert failed — not critical, skip silently
+      }
+    }
+
     return NextResponse.json({ project }, { status: 201 });
   } catch (err) {
     console.error('[VibePing] Projects API error:', err);

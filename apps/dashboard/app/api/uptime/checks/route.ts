@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     .insert({
       url,
       project_id,
-      interval_seconds: 60,
+      interval_seconds: 300,
       enabled: true,
     })
     .select()
