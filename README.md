@@ -53,12 +53,12 @@ npm install @vibeping/sdk
 ```
 
 ```typescript
-import { vibeping } from '@vibeping/sdk';
+import { init, track } from '@vibeping/sdk';
 
-vibeping.init({ id: 'vp_your_project_id' });
+init({ id: 'vp_your_project_id' });
 
 // Track custom events
-vibeping.track('signup_completed', { plan: 'free' });
+track('signup_completed', { plan: 'free' });
 ```
 
 > **Want the hosted version?** Skip setup entirely at [app.vibeping.dev](https://app.vibeping.dev) — free tier available.
@@ -69,7 +69,7 @@ vibeping.track('signup_completed', { plan: 'free' });
 - 🔴 **Error Tracking** — JS errors with stack traces, caught automatically. Zero config.
 - 💚 **Uptime Monitoring** — Response times + alerts when your app goes down.
 - ⚡ **Web Vitals** — LCP, FID, CLS tracked out of the box.
-- 🎯 **Custom Events** — `vibeping.track('signup', { plan: 'pro' })` — that's it.
+- 🎯 **Custom Events** — `track('signup', { plan: 'pro' })` — that's it.
 - 🔒 **Privacy-First** — No cookies. No PII. No consent banners needed.
 - 🪶 **Tiny** — 3.3KB gzipped. Zero dependencies. Ships as UMD + ESM.
 
@@ -87,12 +87,14 @@ Works anywhere JavaScript runs. Tested with:
 
 ## API Reference
 
-### `vibeping.init(options)`
+### `init(options)`
 
 Initialize VibePing. Call once, as early as possible.
 
 ```typescript
-vibeping.init({
+import { init } from '@vibeping/sdk';
+
+init({
   id: 'vp_your_project_id', // Required
   trackErrors: true, // Default: true
   trackVitals: true, // Default: true
@@ -100,17 +102,21 @@ vibeping.init({
 });
 ```
 
-### `vibeping.track(event, properties?)`
+### `track(event, properties?)`
 
 ```typescript
-vibeping.track('button_clicked', { label: 'Buy Now' });
-vibeping.track('signup_completed', { plan: 'pro', source: 'landing' });
+import { track } from '@vibeping/sdk';
+
+track('button_clicked', { label: 'Buy Now' });
+track('signup_completed', { plan: 'pro', source: 'landing' });
 ```
 
-### `vibeping.identify(userId, traits?)`
+### `identify(traits)`
 
 ```typescript
-vibeping.identify('user_123', { email: 'dev@example.com', plan: 'pro' });
+import { identify } from '@vibeping/sdk';
+
+identify({ userId: 'user_123', email: 'dev@example.com', plan: 'pro' });
 ```
 
 ## Self-Hosting
