@@ -41,7 +41,7 @@ export default function UptimeClient({ projectId, hasChecks, pings }: Props) {
           Add your app URL to start monitoring uptime
         </h2>
         <p className="text-slate-400 text-center max-w-md mb-8">
-          We&apos;ll ping your URL every 60 seconds and track response times and availability.
+          We&apos;ll ping your URL every 5 minutes and track response times and availability.
         </p>
 
         <form
