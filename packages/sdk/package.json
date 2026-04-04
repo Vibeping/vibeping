@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/vibeping/vibeping-oss.git",
+    "url": "https://github.com/Vibeping/vibeping.git",
     "directory": "packages/sdk"
   },
   "keywords": [
@@ -39,7 +39,8 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
     "build": "rollup -c && tsc --emitDeclarationOnly --declaration --outDir dist",
